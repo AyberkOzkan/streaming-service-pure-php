@@ -1,0 +1,42 @@
+# Ortak sistem dosyaları
+*.log
+*.env
+*.DS_Store
+*.swp
+
+# PHP hata kayıtları
+error_log
+logs/*
+!logs/.gitkeep
+
+# Geliştirici yardımcı dosyaları
+.vscode/
+.idea/
+*.sublime-*
+
+# Composer
+/vendor/
+
+# Cache
+cache/
+*.cache
+
+# Geçici dosyalar
+*.bak
+*.tmp
+
+# Yedekler
+*.tar
+*.tar.gz
+*.zip
+
+# Web update ve build çıktıları
+*.bak.php
+backup_*.tar.gz
+
+# rsync tarafından oluşturulan dosyalar
+*.~tmp~
+
+# Örnek veritabanı dosyası (eğer dump eklenecekse)
+*.sql
+*.sql.gz

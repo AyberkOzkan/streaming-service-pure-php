@@ -1,6 +1,8 @@
 <?php
-class HomeController {
-    public function index() {
-        echo "<h1>Hoş geldiniz - streamingservice</h1>";
+    class HomeController {
+        public function index() {
+            require_once __DIR__ . '/../views/layouts/header.php';
+            require_once __DIR__ . '/../views/home/index.php';
+            require_once __DIR__ . '/../views/layouts/footer.php';
+        }
     }
-}

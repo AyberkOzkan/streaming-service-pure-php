@@ -11,7 +11,7 @@ Bu notlar, saf PHP ile geliştirdiğim `streamingservice` adlı web projesinin s
 
 ```bash
     sudo apt update && sudo apt upgrade -y
-    sudo apt install nginx php php-fpm php-pgsql postgresql postgresql-contrib git unzip curl composer ufw -y
+    sudo apt install nginx php php-fpm php-pgsql postgresql postgresql-contrib git unzip curl composer ufw rsync -y
 ```
 
 - `ssh` ile erişim için sunucuya bağlantı denendi.
@@ -58,20 +58,41 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 
 #### Konum: _/var/www/streamingservice_
 
-```    public/
+```
+streamingservice/
     app/
     ├── controllers/
+    │     └── HomeController.php 
     ├── models/
     ├── views/
+    │     ├── home/
+    │     │     ├── index.php 
+    │     ├── layouts/
+    │     │     ├── header.php 
+    │     │     └── footer.php 
     ├── config/
+    │     ├── definitions.php 
     │     ├── db.php
     │     └── bootstrap.php
-    └── core/
-            ├── Logger.php
-            └── env_loader.php
-    logs/
+    ├── core/
+    │       ├── Logger.php
+    │       ├── helpers.php
+    │       └── env_loader.php
+    ├── public/
+    │       ├── css/
+    │       ├── fonts/
+    │       ├── img/
+    │       ├── js/
+    │       ├── sass/
+    │       ├── Source/
+    │       ├── videos/
+    │       └── index.php
+    ├── router.php
+    ├── logs/
     .env
     .gitignore
+    web_update.sh
+    php_mvc.sh
 ```
 
 ## Veritabanı Oluşturuldu
@@ -84,6 +105,23 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 
 > `.env` dosyasındaki bilgiler veritabanı bağlantısı için kullanılmaktadır. Şifre aynı olmalıdır.
 
+## Yapı Geliştirildi
+
+- `app/views/layouts/` dizini oluşturuldu. Ortak kullanılan `header.php` ve `footer.php` buraya taşındı.
+- `core/helpers.php` dosyası oluşturuldu.
+  - `asset()` fonksiyonu eklendi. CSS/JS dosyalarının yolunu dinamik oluşturmak için kullanılır
+- `config/definitions.php` içerisine `BASE_URL` tanımı eklendi.
+- Tema projeye başarıyla entegre edildi. Tüm CSS, JS, resim gibi varlıklar `public/` altına yerleştirildi.
+  - `public/` dizini altına şu klasörler eklendi:
+    - `css/`, `js/`, `fonts/`, `img/`, `videos/`, `sass/`, `Source/`
+- Ana sayfa `HomeController` üzerinden çalışacak şekilde yönlendirildi.
+  - View dosyası: `app/views/home/index.php`
+- Layout sistemi ile sayfalar artık `header.php` ve `footer.php` dosyalarıyla çevreleniyor.
+- `web_update.sh` scripti geliştirildi:
+  - `scp` ile dosyalar uzak sunucuya gönderiliyor.
+  - Gönderim öncesi yedek alınıyor ve en fazla 5 yedek tutuluyor.
+  - Dosya gönderimi sonrası uzak sunucuda `chown` ve `chmod` otomatik uygulanıyor.
+
 ---
 
 ## Genel Durum
@@ -93,6 +131,10 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 - [x] Nginx + PHP yapılandırıldı  
 - [x] Proje dizin yapısı script ile kuruldu  
 - [x] Veritabanı PostgreSQL ile tanımlandı  
-- [x] Web projesine tarayıcıdan erişildi  
+- [x] Web projesine tarayıcıdan erişildi
+- [x] MVC yapılandırmasına uygun layout sistemi (`header.php`, `footer.php`) oluşturuldu
+- [x] Tema entegre edildi, varlık dosyaları (`css`, `js`, `img`, vb.) `public/` altına yerleştirildi
+- [X] Yardımcı Scriptler yazıldı
 
 ---
+

@@ -65,6 +65,9 @@ streamingservice/
     │     └── HomeController.php 
     ├── models/
     ├── views/
+    │     ├── auth/
+    │     │     ├── login.php
+    │     │     ├── register.php
     │     ├── home/
     │     │     ├── index.php 
     │     ├── layouts/
@@ -135,6 +138,16 @@ streamingservice/
 - [x] MVC yapılandırmasına uygun layout sistemi (`header.php`, `footer.php`) oluşturuldu
 - [x] Tema entegre edildi, varlık dosyaları (`css`, `js`, `img`, vb.) `public/` altına yerleştirildi
 - [X] Yardımcı Scriptler yazıldı
+- [x] Kayıt Olma Sayfası
+- [x] Kullanıcı kayıt formu (`/register`) oluşturuldu.
+- [ ] Giriş Sayfası
 
 ---
 
+csrf koruması ekle
+Form içinden gelen değerlerin XSS’e karşı temizlenmesi (örneğin htmlspecialchars)
+E-posta tekrar kontrolü (aynı e-posta ile tekrar kayıt olmamalı)
+Hatalar için geçici session mesajları veya toast bildirimleri
+Login işleminin yazılması ve session başlatılması
+CSRF token kullanımı
+İngilizce/Türkçe dil karışıklığı giderilip çoklu dil desteği için temel atılabilir

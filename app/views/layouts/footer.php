@@ -7,14 +7,14 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="footer__logo">
-                    <a href="./index.html"><img src="<?= asset('img/logo.png')?>" alt=""></a>
+                    <a href="./"><img src="<?= asset('img/logo.png')?>" alt=""></a>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="footer__nav">
                     <ul>
-                        <li class="active"><a href="./index.html">Homepage</a></li>
-                        <li><a href="./categories.html">Categories</a></li>
+                        <li class="active"><a href="./">Homepage</a></li>
+                        <li><a href="./categories">Categories</a></li>
                     </ul>
                 </div>
             </div>

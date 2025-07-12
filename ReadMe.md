@@ -140,7 +140,8 @@ streamingservice/
 - [X] Yardımcı Scriptler yazıldı
 - [x] Kayıt Olma Sayfası
 - [x] Kullanıcı kayıt formu (`/register`) oluşturuldu.
-- [ ] Giriş Sayfası
+- [x] Kullanıcı Giriş Sayfası (`/login`) oluşturuldu.
+- [x] Kullanıcı oturum yönetimi ve erişim kontrolleri eklendi
 
 ---
 
@@ -148,6 +149,5 @@ csrf koruması ekle
 Form içinden gelen değerlerin XSS’e karşı temizlenmesi (örneğin htmlspecialchars)
 E-posta tekrar kontrolü (aynı e-posta ile tekrar kayıt olmamalı)
 Hatalar için geçici session mesajları veya toast bildirimleri
-Login işleminin yazılması ve session başlatılması
 CSRF token kullanımı
 İngilizce/Türkçe dil karışıklığı giderilip çoklu dil desteği için temel atılabilir

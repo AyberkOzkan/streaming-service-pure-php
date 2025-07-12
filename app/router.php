@@ -18,6 +18,21 @@
             $controller = new AuthController();
             $controller->register();
             break;
+        case '/login':
+            require_once __DIR__ . '/controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->showLoginForm();
+            break;
+        case '/login/submit':
+            require_once __DIR__ . '/controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->login();
+            break;
+        case '/logout':
+            require_once __DIR__ . '/controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->logout();
+            break;
         default:
             http_response_code(404);
             echo "404 Not Found";

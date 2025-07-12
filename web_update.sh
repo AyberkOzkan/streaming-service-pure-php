@@ -2,7 +2,7 @@
 
 # === Ayarlar ===
 REMOTE_USER="streamingservice"
-REMOTE_IP="192.168.1.105"
+REMOTE_IP="192.168.1.107"
 REMOTE_PATH="/var/www/streamingservice"
 LOCAL_PATH=$(pwd)
 SSH_PORT=22

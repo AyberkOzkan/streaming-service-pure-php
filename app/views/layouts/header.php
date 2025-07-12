@@ -1,3 +1,9 @@
+<?php 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="zxx">
 
@@ -38,7 +44,7 @@
                 <div class="col-lg-2">
                     <div class="header__logo">
                         <a href="./">
-                            <img src="<?= asset('img/logo.png') ?>" alt="">
+                            <img class="mt-2" src="<?= asset('img/logo.png') ?>" alt="" style="height: 28px; width: auto;">
                         </a>
                     </div>
                 </div>
@@ -49,24 +55,30 @@
                                 <li><a href="./">Homepage</a></li>
                                 <li><a href="./categories">Categories <span class="arrow_carrot-down"></span></a>
                                     <ul class="dropdown">
-                                        <li><a href="./categories">Categories</a></li>
-                                        <li><a href="./anime-details">Anime Details</a></li>
-                                        <li><a href="./anime-watching">Anime Watching</a></li>
-                                        <li><a href="./blog-details">Blog Details</a></li>
-                                        <li><a href="./signup">Sign Up</a></li>
-                                        <li><a href="./login">Login</a></li>
+                                        <li><a href="./categories">Magic</a></li>
+                                        <li><a href="./categories">Adventure</a></li>
+                                        <li><a href="./categories">Action</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="./blog">Our Blog</a></li>
-                                <li><a href="#">Contacts</a></li>
                             </ul>
                         </nav>
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <div class="header__right">
-                        <a href="#" class="search-switch"><span class="icon_search"></span></a>
-                        <a href="./login"><span class="icon_profile"></span></a>
+                    <div class="header__right d-flex align-items-center justify-content-end">
+                        <a href="#" class="search-switch mr-3"><span class="icon_search"></span></a>
+                        <div class="header__right__auth">
+                            <?php if (isset($_SESSION['user_name']) && isset($_SESSION['user_id'])): ?>
+                                <a href="/profile" class="text-white mr-2 d-inline-flex align-items-center">
+                                    <i class="icon_profile mr-1"></i>
+                                    <?= htmlspecialchars($_SESSION['user_name']) ?>
+                                </a>
+                                <a href="/logout" class="primary-btn small-btn">Logout</a>
+                            <?php else: ?>
+                                <a href="/login"><span class="icon_profile"></span> Login</a>
+                                <a href="/register" class="primary-btn ml-2">Register</a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>

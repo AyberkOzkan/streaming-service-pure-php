@@ -62,7 +62,9 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 streamingservice/
     app/
     ├── controllers/
-    │     └── HomeController.php 
+    │     ├── HomeController.php 
+    │     ├── AuthController.php
+    │     ├── AnimeController.php
     ├── models/
     ├── views/
     │     ├── auth/
@@ -102,7 +104,7 @@ streamingservice/
 
 ```sql
     CREATE DATABASE streamingservice;
-    CREATE USER root WITH PASSWORD 'şifreniz';
+    CREATE USER root WITH PASSWORD 'password123';
     GRANT ALL PRIVILEGES ON DATABASE streamingservice TO root;
 ```
 
@@ -141,7 +143,10 @@ streamingservice/
 - [x] Kayıt Olma Sayfası
 - [x] Kullanıcı kayıt formu (`/register`) oluşturuldu.
 - [x] Kullanıcı Giriş Sayfası (`/login`) oluşturuldu.
-- [x] Kullanıcı oturum yönetimi ve erişim kontrolleri eklendi
+- [x] Kullanıcı oturum yönetimi ve erişim kontrolleri eklenmesi
+- [x] Jikan API entegrasyonu
+- [x] Ana Sayfa'da gösterilecek bölümlerin dinamikleştirilerek API'den veri çekecek hale getirilmesi
+
 
 ---
 

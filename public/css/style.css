@@ -460,13 +460,15 @@ ol {
 	color: #e53637;
 	background: #ffffff;
 	padding: 5px 14px 3px;
-	display: inline-block;
+	display: table;
 	position: relative;
 	top: -100px;
 	opacity: 0;
 	-webkit-transition: all, 0.2s;
 	-o-transition: all, 0.2s;
 	transition: all, 0.2s;
+	border-radius: 8px;
+	margin-bottom: 3px;
 }
 
 .hero__text h2 {

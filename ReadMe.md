@@ -146,6 +146,9 @@ streamingservice/
 - [x] Kullanıcı oturum yönetimi ve erişim kontrolleri eklenmesi
 - [x] Jikan API entegrasyonu
 - [x] Ana Sayfa'da gösterilecek bölümlerin dinamikleştirilerek API'den veri çekecek hale getirilmesi
+- [x] Dinamik kategori (`/anime/genre/{genre-name}`) sayfasının oluşturulması
+- [x] Pagination eklenmesi
+- [x] Anasayfaya harf bazlı filtreleme eklenmesi
 
 
 ---
@@ -155,4 +158,3 @@ Form içinden gelen değerlerin XSS’e karşı temizlenmesi (örneğin htmlspec
 E-posta tekrar kontrolü (aynı e-posta ile tekrar kayıt olmamalı)
 Hatalar için geçici session mesajları veya toast bildirimleri
 CSRF token kullanımı
-İngilizce/Türkçe dil karışıklığı giderilip çoklu dil desteği için temel atılabilir

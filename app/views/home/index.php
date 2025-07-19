@@ -1,5 +1,43 @@
 
 
+    <section class="genre-filter spad">
+        <div class="container">
+            <div class="section-title">
+                <h4>Browse by Genre</h4>
+            </div>
+
+            <!-- Harfler -->
+            <div class="genre-letters">
+                <?php foreach (range('A', 'Z') as $char): ?>
+                    <button class="genre-letter" data-letter="<?= $char ?>"><?= $char ?></button>
+                <?php endforeach; ?>
+                <?php if (isset($groupedGenres['#'])): ?>
+                    <button class="genre-letter" data-letter="#">#</button>
+                <?php endif; ?>
+            </div>
+
+            <!-- Kategoriler -->
+            <div class="genre-list mt-4">
+                <?php foreach ($groupedGenres as $letter => $genreList): ?>
+                    <div class="genre-section" id="genre-<?= $letter ?>" style="display: none;">
+                        <h2 style="color: #e53637aa" class="mt-4"><?= $letter ?></h2>
+                        <ul class="genre-grid">
+                            <?php foreach ($genreList as $genre): ?>
+                                <li>
+                                    <a href="/anime/genre/<?= urlencode(strtolower($genre['name'])) ?>" class="text-white">
+                                        <?= htmlspecialchars($genre['name']) ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+
+    
     <!-- Hero Section Begin -->
     <section class="hero">
         <div class="container">
@@ -244,3 +282,24 @@
         </div>
     </section>
 <!-- Product Section End -->
+
+
+    <script>
+        document.querySelectorAll('.genre-letter').forEach(letterBtn => {
+            letterBtn.addEventListener('click', () => {
+                const letter = letterBtn.dataset.letter;
+
+                // Tüm blokları gizle
+                document.querySelectorAll('.genre-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                // Sadece tıklanan harfi aç
+                const selected = document.getElementById('genre-' + letter);
+                if (selected) {
+                    selected.style.display = 'block';
+                    // selected.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>

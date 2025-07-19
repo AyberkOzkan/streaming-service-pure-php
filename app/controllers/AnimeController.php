@@ -58,6 +58,20 @@
             $data = json_decode($json, true);
             return $data['data'] ?? [];
         }
+        public static function categoryPage(string $category): void {
+            $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';
+            $url = "{$baseUrl}/anime?genres=" . urlencode($category) . "&limit=20";
+            $json = cachedGet($url);
+            if (!$json) {
+                http_response_code(404);
+                echo "Category not found.";
+                return;
+            }
 
+            $data = json_decode($json, true);
+            $animeList = $data['data'] ?? [];
+            $categoryTitle = htmlspecialchars(ucfirst($category));
 
+            require_once __DIR__ . '/../views/anime/categories.php';
+        }
     }

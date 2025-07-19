@@ -2,6 +2,8 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+    require_once __DIR__ . '/../../controllers/GenreController.php';
+    $genres = GenreController::all();
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +45,7 @@
             <div class="row">
                 <div class="col-lg-2">
                     <div class="header__logo">
-                        <a href="./">
+                        <a href="<?= HOMEPAGE ?>">
                             <img class="mt-2" src="<?= asset('img/logo.png') ?>" alt="" style="height: 28px; width: auto;">
                         </a>
                     </div>
@@ -52,12 +54,14 @@
                     <div class="header__nav">
                         <nav class="header__menu mobile-menu">
                             <ul>
-                                <li><a href="./">Homepage</a></li>
+                                <li><a href="<?= HOMEPAGE ?>">Homepage</a></li>
                                 <li><a href="./categories">Categories <span class="arrow_carrot-down"></span></a>
                                     <ul class="dropdown">
-                                        <li><a href="./categories">Magic</a></li>
-                                        <li><a href="./categories">Adventure</a></li>
-                                        <li><a href="./categories">Action</a></li>
+                                        <?php foreach ($genres as $genre): ?>
+                                            <li><a href="/anime/genre/<?= urlencode(strtolower($genre['name'])) ?>">
+                                                <?= htmlspecialchars($genre['name']) ?>
+                                            </a></li>
+                                        <?php endforeach; ?>
                                     </ul>
                                 </li>
                             </ul>

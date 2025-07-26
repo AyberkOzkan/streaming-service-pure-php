@@ -81,7 +81,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <div class="btn__all">
-                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                    <a href="/anime/trending" class="primary-btn">View All <span class="arrow_right"></span></a>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <div class="btn__all">
-                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                    <a href="/anime/genre/adventure" class="primary-btn">View All <span class="arrow_right"></span></a>
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,11 @@
                                                 <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
                                                 <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
                                             </ul>
-                                            <h5><a href="<?= htmlspecialchars($anime['url']) ?>" target="_blank"><?= htmlspecialchars($anime['title']) ?></a></h5>
+                                            <h5>
+                                                <a href="/anime/<?= $anime['mal_id'] ?>">
+                                                    <?= htmlspecialchars($anime['title']) ?>
+                                                </a>
+                                            </h5>
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +159,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <div class="btn__all">
-                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                    <a href="/anime/recent" class="primary-btn">View All <span class="arrow_right"></span></a>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +177,11 @@
                                                 <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
                                                 <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
                                             </ul>
-                                            <h5><a href="<?= htmlspecialchars($anime['url']) ?>" target="_blank"><?= htmlspecialchars($anime['title']) ?></a></h5>
+                                            <h5>
+                                                <a href="/anime/<?= $anime['mal_id'] ?>">
+                                                    <?= htmlspecialchars($anime['title']) ?>
+                                                </a>
+                                            </h5>
                                         </div>
                                     </div>
                                 </div>
@@ -189,7 +197,7 @@
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4">
                                 <div class="btn__all">
-                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                    <a href="/anime/airing" class="primary-btn">View All <span class="arrow_right"></span></a>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +215,11 @@
                                                 <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
                                                 <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
                                             </ul>
-                                            <h5><a href="<?= htmlspecialchars($anime['url']) ?>" target="_blank"><?= htmlspecialchars($anime['title']) ?></a></h5>
+                                            <h5>
+                                                <a href="/anime/<?= $anime['mal_id'] ?>">
+                                                    <?= htmlspecialchars($anime['title']) ?>
+                                                </a>
+                                            </h5>
                                         </div> 
                                     </div>
                                 </div>

@@ -65,8 +65,13 @@ streamingservice/
     │     ├── HomeController.php 
     │     ├── AuthController.php
     │     ├── AnimeController.php
+    │     ├── GenreController.php
     ├── models/
+    │     ├── User.php
     ├── views/
+    │     ├── anime/
+    │     │     ├── categories.php
+    │     │     ├── details.php
     │     ├── auth/
     │     │     ├── login.php
     │     │     ├── register.php
@@ -149,6 +154,7 @@ streamingservice/
 - [x] Dinamik kategori (`/anime/genre/{genre-name}`) sayfasının oluşturulması
 - [x] Pagination eklenmesi
 - [x] Anasayfaya harf bazlı filtreleme eklenmesi
+- [x] Dinamik detay (`/anime/{id}`) sayfalarının oluşturulması
 
 
 ---

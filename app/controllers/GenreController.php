@@ -42,7 +42,7 @@
             $lastPage = $pagination['last_visible_page'] ?? 1;
             $categoryTitle = ucfirst($genreName);
             $genreName = strtolower($genreName);
-
+            $basePath = "/anime/genre/" . urlencode($genreName);
             require_once __DIR__ . '/../views/anime/categories.php';
         }
 

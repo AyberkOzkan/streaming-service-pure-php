@@ -38,28 +38,27 @@
             $controller = new GenreController();
             $controller->show($matches[1]);
             break;
+        case (preg_match('#^/anime/(\d+)$#', $uri, $matches) ? true : false):
+            require_once __DIR__ . '/controllers/AnimeController.php';
+            AnimeController::details((int)$matches[1]);
+            break;
+        case (preg_match('#^/anime/trending(?:\?page=(\d+))?$#', $_SERVER['REQUEST_URI'], $matches) ? true : false):
+            require_once __DIR__ . '/controllers/AnimeController.php';
+            $page = isset($matches[1]) ? (int)$matches[1] : 1;
+            AnimeController::trendingPage($page);
+            break;
 
+        case (preg_match('#^/anime/recent(?:\?page=(\d+))?$#', $_SERVER['REQUEST_URI'], $matches) ? true : false):
+            require_once __DIR__ . '/controllers/AnimeController.php';
+            $page = isset($matches[1]) ? (int)$matches[1] : 1;
+            AnimeController::recentlyAddedPage($page);
+            break;
 
-        // // --- View All / Anime Genre Pages ---
-        // case preg_match('#^/anime/trending$#', $uri) ? true : false:
-        //     require_once __DIR__ . '/controllers/AnimeController.php';
-        //     AnimeController::trendingPage();
-        //     break;
-
-        // case preg_match('#^/anime/genre/adventure$#', $uri) ? true : false:
-        //     require_once __DIR__ . '/controllers/AnimeController.php';
-        //     AnimeController::adventurePage();
-        //     break;
-
-        // case preg_match('#^/anime/recent$#', $uri) ? true : false:
-        //     require_once __DIR__ . '/controllers/AnimeController.php';
-        //     AnimeController::recentlyAddedPage();
-        //     break;
-
-        // case preg_match('#^/anime/genre/liveaction$#', $uri) ? true : false:
-        //     require_once __DIR__ . '/controllers/AnimeController.php';
-        //     AnimeController::liveActionPage();
-        //     break;
+        case (preg_match('#^/anime/airing(?:\?page=(\d+))?$#', $_SERVER['REQUEST_URI'], $matches) ? true : false):
+            require_once __DIR__ . '/controllers/AnimeController.php';
+            $page = isset($matches[1]) ? (int)$matches[1] : 1;
+            AnimeController::liveAiringPage($page);
+            break;
 
         default:
             http_response_code(404);

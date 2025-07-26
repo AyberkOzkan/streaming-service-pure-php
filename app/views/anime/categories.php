@@ -1,17 +1,15 @@
 <?php 
     require_once '../app/views/layouts/header.php'; 
-    
-    function renderPagination($currentPage, $lastPage, $genreName) {
-        $base = "/anime/genre/" . urlencode($genreName);
-
+        
+    function renderPagination($currentPage, $lastPage, $basePath) {
         echo '<div class="product__pagination">';
 
         if ($currentPage > 1) {
-            echo '<a href="' . $base . '?page=' . ($currentPage - 1) . '">&laquo; Prev</a>';
+            echo '<a href="' . $basePath . '?page=' . ($currentPage - 1) . '">&laquo; Prev</a>';
         }
 
         if ($currentPage > 2) {
-            echo '<a href="' . $base . '?page=1">1</a>';
+            echo '<a href="' . $basePath . '?page=1">1</a>';
             if ($currentPage > 3) {
                 echo '<span>...</span>';
             }
@@ -21,7 +19,7 @@
             if ($i == $currentPage) {
                 echo '<span class="current-page">' . $i . '</span>';
             } else {
-                echo '<a href="' . $base . '?page=' . $i . '">' . $i . '</a>';
+                echo '<a href="' . $basePath . '?page=' . $i . '">' . $i . '</a>';
             }
         }
 
@@ -29,15 +27,17 @@
             if ($currentPage < $lastPage - 2) {
                 echo '<span>...</span>';
             }
-            echo '<a href="' . $base . '?page=' . $lastPage . '">' . $lastPage . '</a>';
+            echo '<a href="' . $basePath . '?page=' . $lastPage . '">' . $lastPage . '</a>';
         }
 
         if ($currentPage < $lastPage) {
-            echo '<a href="' . $base . '?page=' . ($currentPage + 1) . '">Next &raquo;</a>';
+            echo '<a href="' . $basePath . '?page=' . ($currentPage + 1) . '">Next &raquo;</a>';
         }
 
         echo '</div>';
-    }    
+    }
+
+
     
 ?>
 
@@ -70,5 +70,5 @@
     </div>
 </section>
 
-<?= renderPagination($currentPage, $lastPage, $genreName) ?>
+<?= renderPagination($currentPage ?? 1, $lastPage ?? 1, $basePath ?? '') ?>
 <?php require_once '../app/views/layouts/footer.php'; ?>

@@ -1,4 +1,5 @@
 <?php require_once '../app/views/layouts/header.php'; ?>
+
     <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
         <div class="container">
@@ -65,10 +66,19 @@
                                 </div>
                             </div>
                             <div class="anime__details__btn">
-                                <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
-                                <a href="anime-watching.html" class="watch-btn"><span>Watch Now</span> <i
-                                    class="fa fa-angle-right"></i></a>
-                                </div>
+                                <?php if (isset($_SESSION['user_id'])): ?>
+                                    <form method="POST" action="/follow/<?= $isFollowing ? 'remove' : 'add' ?>" style="display:inline;">
+                                        <input type="hidden" name="anime_id" value="<?= $animeDetails['mal_id'] ?>">
+                                        <input type="hidden" name="anime_title" value="<?= htmlspecialchars($animeDetails['title']) ?>">
+                                        <button type="submit" class="follow-btn">
+                                            <i class="fa <?= $isFollowing ? 'fa-heart' : 'fa-heart-o' ?>"></i>
+                                            <?= $isFollowing ? 'Unfollow' : 'Follow' ?>
+                                        </button>
+                                    </form>
+                                <?php else: ?>
+                                    <a href="/login" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
+                                <?php endif; ?>
+                                <a href="anime-watching.html" class="watch-btn"><span>Watch Now</span> <i class="fa fa-angle-right"></i></a>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 <?php 
-
+    require_once __DIR__ . '/../models/FollowModel.php';
+    
     class AnimeController 
     {
         public static function trending(int $limit = 6): array {
@@ -111,6 +112,13 @@
                 }
             }
 
+            $followModel = new FollowModel();
+            $isFollowing = false;
+            if (isset($_SESSION['user_id'])) {
+                $isFollowing = $followModel->isFollowing($_SESSION['user_id'], $malId);
+            }
+
+
             require_once __DIR__ . '/../views/anime/details.php';
         }
 
@@ -138,7 +146,6 @@
 
         }
 
-
         public static function recentlyAddedPage(int $page = 1): void {
             $limit = 24;
             $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';
@@ -162,7 +169,6 @@
             require_once __DIR__ . '/../views/anime/categories.php';
 
         }
-
 
         public static function liveAiringPage(int $page = 1): void {
             $limit = 24;

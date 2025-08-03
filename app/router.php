@@ -1,6 +1,21 @@
 <?php
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     error_log("Requested URI: " . $uri);
+
+    // Follow işlemleri için yönlendirme
+    if ($uri === '/follow/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/controllers/FollowController.php';
+        FollowController::addFollow();
+        return;
+    }
+
+    if ($uri === '/follow/remove' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/controllers/FollowController.php';
+        FollowController::removeFollow();
+        return;
+    }
+
+
     switch ($uri) {
         case '/':
             require_once __DIR__ . '/controllers/HomeController.php';
@@ -59,9 +74,11 @@
             $page = isset($matches[1]) ? (int)$matches[1] : 1;
             AnimeController::liveAiringPage($page);
             break;
+        
 
         default:
             http_response_code(404);
             echo "404 Not Found";
             break;
     }
+

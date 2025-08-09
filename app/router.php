@@ -15,6 +15,12 @@
         return;
     }
 
+    if ($uri === '/comments/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/controllers/CommentController.php';
+        CommentController::add();
+        return;
+    }
+
 
     switch ($uri) {
         case '/':

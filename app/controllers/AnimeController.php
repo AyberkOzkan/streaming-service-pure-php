@@ -1,6 +1,7 @@
 <?php 
     require_once __DIR__ . '/../models/FollowModel.php';
-    
+    require_once __DIR__ . '/../models/CommentModel.php';
+
     class AnimeController 
     {
         public static function trending(int $limit = 6): array {
@@ -117,6 +118,9 @@
             if (isset($_SESSION['user_id'])) {
                 $isFollowing = $followModel->isFollowing($_SESSION['user_id'], $malId);
             }
+
+            $commentModel = new CommentModel();
+            $comments = $commentModel->listByAnime($malId);
 
 
             require_once __DIR__ . '/../views/anime/details.php';

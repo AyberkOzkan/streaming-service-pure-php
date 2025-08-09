@@ -63,12 +63,14 @@ streamingservice/
     app/
     ├── controllers/
     │     ├── AuthController.php
+    │     ├── CommentController.php
     │     ├── AnimeController.php
     │     ├── FollowController.php
     │     ├── GenreController.php
     │     ├── HomeController.php 
     ├── models/
     │     ├── FollowModel.php
+    │     ├── CommentModel.php
     │     ├── User.php
     ├── views/
     │     ├── anime/
@@ -158,6 +160,7 @@ streamingservice/
 - [x] Anasayfaya harf bazlı filtreleme eklenmesi
 - [x] Dinamik detay (`/anime/{id}`) sayfalarının oluşturulması
 - [x] Follow butonlarının işlevlendirilmesi
+- [x] Yorum sisteminin geliştirilmesi
 
 
 ---

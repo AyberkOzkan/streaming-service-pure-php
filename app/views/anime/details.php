@@ -86,74 +86,33 @@
                 <div class="row">
                     <div class="col-lg-8 col-md-8">
                         <div class="anime__details__review">
-                            <div class="section-title">
-                                <h5>Reviews</h5>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-1.jpg" alt="">
+                            <div class="section-title"><h5>Reviews</h5></div>
+                            <?php if (empty($comments)): ?>
+                                <p class="text-white-50">No comments yet.</p>
+                            <?php else: ?>
+                                <?php foreach ($comments as $c): ?>
+                                <div class="anime__review__item">
+                                    <div class="anime__review__item__pic">
+                                    <img src="/img/avatar-default.png" alt="">
+                                    </div>
+                                    <div class="anime__review__item__text">
+                                    <h6><?= htmlspecialchars($c['user_name'] ?? 'User') ?> - 
+                                        <span><?= htmlspecialchars(date('M d, Y H:i', strtotime($c['created_at']))) ?></span>
+                                    </h6>
+                                    <p><?= nl2br(htmlspecialchars($c['body'])) ?></p>
+                                    </div>
                                 </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                                    <p>whachikan Just noticed that someone categorized this as belonging to the genre
-                                    "demons" LOL</p>
-                                </div>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-2.jpg" alt="">
-                                </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                                    <p>Finally it came out ages ago</p>
-                                </div>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-3.jpg" alt="">
-                                </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                                    <p>Where is the episode 15 ? Slow update! Tch</p>
-                                </div>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-4.jpg" alt="">
-                                </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Chris Curry - <span>1 Hour ago</span></h6>
-                                    <p>whachikan Just noticed that someone categorized this as belonging to the genre
-                                    "demons" LOL</p>
-                                </div>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-5.jpg" alt="">
-                                </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Lewis Mann - <span>5 Hour ago</span></h6>
-                                    <p>Finally it came out ages ago</p>
-                                </div>
-                            </div>
-                            <div class="anime__review__item">
-                                <div class="anime__review__item__pic">
-                                    <img src="img/anime/review-6.jpg" alt="">
-                                </div>
-                                <div class="anime__review__item__text">
-                                    <h6>Louis Tyler - <span>20 Hour ago</span></h6>
-                                    <p>Where is the episode 15 ? Slow update! Tch</p>
-                                </div>
-                            </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
-                        <div class="anime__details__form">
-                            <div class="section-title">
-                                <h5>Your Comment</h5>
-                            </div>
+                        <div class="anime__details__form" id="comments">
+                            <div class="section-title"><h5>Your Comment</h5></div>
+
                             <?php if (isset($_SESSION['user_name']) && isset($_SESSION['user_id'])): ?>
-                                <form action="#">
-                                    <textarea placeholder="Your Comment"></textarea>
-                                    <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+                                <form method="POST" action="/comments/add">
+                                <input type="hidden" name="anime_id" value="<?= (int)$animeDetails['mal_id'] ?>">
+                                <textarea name="body" placeholder="Your Comment" required></textarea>
+                                <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
                                 </form>
                             <?php else: ?>
                                 <p class="text-white">You must <a href="/login" class="text-danger">log in</a> to leave a comment.</p>

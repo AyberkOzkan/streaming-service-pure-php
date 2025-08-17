@@ -76,6 +76,7 @@ streamingservice/
     │     ├── anime/
     │     │     ├── categories.php
     │     │     ├── details.php
+    │     │     ├── watch.php
     │     ├── auth/
     │     │     ├── login.php
     │     │     ├── register.php
@@ -161,6 +162,7 @@ streamingservice/
 - [x] Dinamik detay (`/anime/{id}`) sayfalarının oluşturulması
 - [x] Follow butonlarının işlevlendirilmesi
 - [x] Yorum sisteminin geliştirilmesi
+- [x] İzleme sayfasının eklenmesi
 
 
 ---

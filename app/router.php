@@ -21,6 +21,14 @@
         return;
     }
 
+    // /anime/{id}/watch
+    if (preg_match('#^/anime/(\d+)/watch$#', $uri, $m)) {
+        require_once __DIR__ . '/controllers/AnimeController.php';
+        $ep = isset($_GET['ep']) ? (int)$_GET['ep'] : 1;
+        AnimeController::watch((int)$m[1], $ep);
+        return;
+    }
+
 
     switch ($uri) {
         case '/':

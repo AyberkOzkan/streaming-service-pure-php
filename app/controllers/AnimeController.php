@@ -198,5 +198,50 @@
 
         }
 
+        public static function watch(int $malId, int $ep = 1): void {
+            $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';
+            $json = cachedGet("{$baseUrl}/anime/{$malId}");
+
+            if (!$json) {
+                http_response_code(404); 
+                echo "Anime not found."; 
+                return;
+            }
+
+            $data = json_decode($json, true);
+            $animeDetails = $data['data'] ?? null;
+            
+            if (!$animeDetails) { 
+                http_response_code(404);
+                echo "Anime not found.";
+                return; 
+            }
+            
+            $videosJson = cachedGet("{$baseUrl}/anime/{$malId}/videos");
+            $videos = $videosJson ? (json_decode($videosJson, true)['data'] ?? []) : [];
+            $promos = $videos['promo'] ?? [];
+            $currentPromoUrl = null;
+            $currentPromoTitle = null;
+
+            if (!empty($promos)) {
+                $first = $promos[0];
+                $currentPromoUrl   = $first['trailer']['embed_url'] ?? $first['trailer']['url'] ?? null;
+                $currentPromoTitle = $first['title'] ?? $animeDetails['title'];
+            }
+
+            $episodeCount = (int)($animeDetails['episodes'] ?? 12);
+            if ($episodeCount <= 0) $episodeCount = 12;
+            $currentEpisode = max(1, (int)$ep);
+
+            // İleride ep→promo eşlemesi yapmak istersen buraya haritalama yazarsın.
+            // Şimdilik tüm ep butonları aynı trailer’ı oynatacak şekilde basit bir oynatıcı gösteriyoruz.
+            // Comments (aynı details’teki gibi)
+            $commentModel = new CommentModel();
+            $comments = $commentModel->listByAnime($malId);
+
+            require_once __DIR__ . '/../views/anime/watch.php';
+        }
+
+
 
     }

@@ -62,16 +62,18 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 streamingservice/
     app/
     ├── controllers/
+    │     ├── AnimeController.php
     │     ├── AuthController.php
     │     ├── CommentController.php
-    │     ├── AnimeController.php
     │     ├── FollowController.php
     │     ├── GenreController.php
-    │     ├── HomeController.php 
+    │     ├── HomeController.php
+    │     ├── ProfileController.php
     ├── models/
     │     ├── FollowModel.php
     │     ├── CommentModel.php
     │     ├── User.php
+    │     └── UserModel.php
     ├── views/
     │     ├── anime/
     │     │     ├── categories.php
@@ -84,7 +86,9 @@ streamingservice/
     │     │     ├── index.php 
     │     ├── layouts/
     │     │     ├── header.php 
-    │     │     └── footer.php 
+    │     │     └── footer.php
+    │     ├── profile/
+    │     │     └── profile.php
     ├── config/
     │     ├── definitions.php 
     │     ├── db.php
@@ -163,6 +167,9 @@ streamingservice/
 - [x] Follow butonlarının işlevlendirilmesi
 - [x] Yorum sisteminin geliştirilmesi
 - [x] İzleme sayfasının eklenmesi
+- [x] Profil sayfasının eklenmesi
+- [x] Profil sayfasına kullanıcıların favorilediği animelerin ve yorumlarının gösterilmesi
+- [ ] 
 
 
 ---

@@ -76,19 +76,39 @@
             $page = isset($matches[1]) ? (int)$matches[1] : 1;
             AnimeController::trendingPage($page);
             break;
-
         case (preg_match('#^/anime/recent(?:\?page=(\d+))?$#', $_SERVER['REQUEST_URI'], $matches) ? true : false):
             require_once __DIR__ . '/controllers/AnimeController.php';
             $page = isset($matches[1]) ? (int)$matches[1] : 1;
             AnimeController::recentlyAddedPage($page);
             break;
-
         case (preg_match('#^/anime/airing(?:\?page=(\d+))?$#', $_SERVER['REQUEST_URI'], $matches) ? true : false):
             require_once __DIR__ . '/controllers/AnimeController.php';
             $page = isset($matches[1]) ? (int)$matches[1] : 1;
             AnimeController::liveAiringPage($page);
             break;
-        
+        case '/profile':
+            require_once __DIR__ . '/controllers/ProfileController.php';
+            $controller = new ProfileController();
+            $controller->index();
+            break;
+        case '/profile/password':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                require_once __DIR__ . '/controllers/ProfileController.php';
+                $controller = new ProfileController();
+                $controller->changePassword();
+            } else {
+                http_response_code(405); echo "Method Not Allowed";
+            }
+            break;
+        case '/profile/update':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                require_once __DIR__ . '/controllers/ProfileController.php';
+                $controller = new ProfileController();
+                $controller->updateProfile();
+            } else {
+                http_response_code(405); echo "Method Not Allowed";
+            }
+            break;
 
         default:
             http_response_code(404);

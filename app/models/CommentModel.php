@@ -39,4 +39,19 @@
             $stmt = $this->db->prepare("DELETE FROM comments WHERE id = :id AND user_id = :user_id");
             $stmt->execute([':id' => $id, ':user_id' => $userId]);
         }
+
+        public function listByUser(int $userId, int $limit = 5, int $offset = 0): array {
+            $stmt = $this->db->prepare(
+                "SELECT id, anime_id, user_id, body, created_at
+                FROM comments
+                WHERE user_id = :user_id
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset"
+            );
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':limit',   $limit,   PDO::PARAM_INT);
+            $stmt->bindValue(':offset',  $offset,  PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
     }

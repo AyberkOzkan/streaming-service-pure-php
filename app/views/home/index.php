@@ -8,12 +8,9 @@
 
             <!-- Harfler -->
             <div class="genre-letters">
-                <?php foreach (range('A', 'Z') as $char): ?>
+                <?php foreach ($availableLetters as $char): ?>
                     <button class="genre-letter" data-letter="<?= $char ?>"><?= $char ?></button>
                 <?php endforeach; ?>
-                <?php if (isset($groupedGenres['#'])): ?>
-                    <button class="genre-letter" data-letter="#">#</button>
-                <?php endif; ?>
             </div>
 
             <!-- Kategoriler -->

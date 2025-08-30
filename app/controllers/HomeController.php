@@ -22,8 +22,16 @@
                 $groupedGenres[$firstLetter][] = $genre;
             }
 
-            ksort($groupedGenres); // Harf sırasına göre sırala
+            ksort($groupedGenres);
+            if (isset($groupedGenres['#'])) {
+                $hashBlock = $groupedGenres['#'];
+                unset($groupedGenres['#']);
+                $groupedGenres['#'] = $hashBlock;
+            }
 
+            $availableLetters = array_keys($groupedGenres);
+            $firstLetter = null;
+            foreach ($availableLetters as $L) { if ($L !== '#') { $firstLetter = $L; break; } }
 
             require_once __DIR__ . '/../views/layouts/header.php';
             require_once __DIR__ . '/../views/home/index.php';

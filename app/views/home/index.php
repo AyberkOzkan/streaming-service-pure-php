@@ -227,63 +227,26 @@
                 <div class="col-lg-4 col-md-6 col-sm-8">
                     <div class="product__sidebar">
                         <div class="product__sidebar__view">
+                            <?php if (!empty($showForYou) && !empty($forYou)): ?>
                             <div class="product__sidebar__comment">
-                                <div class="section-title">
-                                    <h5>For You</h5>
-                                </div>
+                                <div class="section-title"><h5>For You</h5></div>
+                                <?php foreach ($forYou as $anime): ?>
                                 <div class="product__sidebar__comment__item">
                                     <div class="product__sidebar__comment__item__pic">
-                                        <img src="img/sidebar/comment-1.jpg" alt="">
+                                        <img src="<?= htmlspecialchars($anime['images']['jpg']['image_url'] ?? '/img/placeholder.jpg') ?>" alt="">
                                     </div>
                                     <div class="product__sidebar__comment__item__text">
-                                        <ul>
-                                            <li>Active</li>
-                                            <li>Movie</li>
-                                        </ul>
-                                        <h5><a href="#">The Seven Deadly Sins: Wrath of the Gods</a></h5>
-                                        <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+                                    <ul>
+                                        <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
+                                        <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
+                                    </ul>
+                                    <h5><a href="/anime/<?= $anime['mal_id'] ?>"><?= htmlspecialchars($anime['title']) ?></a></h5>
+                                    <span><i class="fa fa-eye"></i> <?= number_format($anime['members'] ?? 0) ?> Views</span>
                                     </div>
                                 </div>
-                                <div class="product__sidebar__comment__item">
-                                    <div class="product__sidebar__comment__item__pic">
-                                        <img src="img/sidebar/comment-2.jpg" alt="">
-                                    </div>
-                                    <div class="product__sidebar__comment__item__text">
-                                        <ul>
-                                            <li>Active</li>
-                                            <li>Movie</li>
-                                        </ul>
-                                        <h5><a href="#">Shirogane Tamashii hen Kouhan sen</a></h5>
-                                        <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
-                                    </div>
-                                </div>
-                                <div class="product__sidebar__comment__item">
-                                    <div class="product__sidebar__comment__item__pic">
-                                        <img src="img/sidebar/comment-3.jpg" alt="">
-                                    </div>
-                                    <div class="product__sidebar__comment__item__text">
-                                        <ul>
-                                            <li>Active</li>
-                                            <li>Movie</li>
-                                        </ul>
-                                        <h5><a href="#">Kizumonogatari III: Reiket su-hen</a></h5>
-                                        <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
-                                    </div>
-                                </div>
-                                <div class="product__sidebar__comment__item">
-                                    <div class="product__sidebar__comment__item__pic">
-                                        <img src="img/sidebar/comment-4.jpg" alt="">
-                                    </div>
-                                    <div class="product__sidebar__comment__item__text">
-                                        <ul>
-                                            <li>Active</li>
-                                            <li>Movie</li>
-                                        </ul>
-                                        <h5><a href="#">Monogatari Series: Second Season</a></h5>
-                                        <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
-                                    </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

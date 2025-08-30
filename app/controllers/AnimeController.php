@@ -45,11 +45,75 @@
             return $data['data'] ?? [];
         }
 
-        // public static function forYou(int $limit = 6): array {
-        //     // This method can be customized based on user preferences or other criteria
-        //     // For now, we'll just return trending anime
-        //     return self::trending($limit);
-        // }
+        public static function forYouFromFollowed(int $userId, int $limit = 8): array {
+            $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';
+
+            $followModel = new FollowModel();
+            $follows = $followModel->listByUser($userId, 200, 0);
+            if (empty($follows)) {
+                return self::trending($limit); // fallback
+            }
+
+            // Takip edilenlerdeki genre’ları al
+            $genreCount  = [];
+            $followedIds = [];
+            foreach ($follows as $row) {
+                $malId = (int)$row['anime_id'];
+                $followedIds[$malId] = true;
+
+                $json = cachedGet("{$baseUrl}/anime/{$malId}");
+                if (!$json) continue;
+                $d = json_decode($json, true);
+                $genres = $d['data']['genres'] ?? [];
+                foreach ($genres as $g) {
+                    $gid = (int)($g['mal_id'] ?? 0);
+                    if ($gid > 0) {
+                        $genreCount[$gid] = ($genreCount[$gid] ?? 0) + 1;
+                    }
+                }
+            }
+
+            if (empty($genreCount)) {
+                return self::trending($limit);
+            }
+
+            // En çok tekrar edenleri al
+            arsort($genreCount);
+            $topGenreIds = array_slice(array_keys($genreCount), 0, 3);
+
+            // Bu türlerden popülerleri çek
+            $idsParam = implode(',', $topGenreIds);
+            $fetchLimit = max($limit * 3, 12);
+            $recUrl = "{$baseUrl}/anime?genres={$idsParam}&order_by=popularity&sort=desc&limit={$fetchLimit}";
+            $recJson = cachedGet($recUrl);
+            if (!$recJson) {
+                return self::trending($limit);
+            }
+
+            $rec = json_decode($recJson, true);
+            $candidates = $rec['data'] ?? [];
+
+            // Zaten takip ettiklerini çıkar, $limit kadar döndür
+            $result = [];
+            foreach ($candidates as $a) {
+                $aid = (int)($a['mal_id'] ?? 0);
+                if (!$aid || isset($followedIds[$aid])) continue;
+
+                $result[] = [
+                    'mal_id'   => $aid,
+                    'title'    => $a['title'] ?? 'Unknown',
+                    'images'   => $a['images'] ?? [],
+                    'type'     => $a['type'] ?? 'Unknown',
+                    'members'  => $a['members'] ?? 0,
+                    'episodes' => $a['episodes'] ?? '?',
+                    'score'    => $a['score'] ?? 'N/A',
+                    'status'   => $a['status'] ?? 'Unknown',
+                ];
+                if (count($result) >= $limit) break;
+            }
+
+            return $result ?: self::trending($limit);
+        }
 
         public static function heroSlider(int $limit = 10): array {
             $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';

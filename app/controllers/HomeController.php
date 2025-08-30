@@ -4,15 +4,23 @@
         public function index() {
             require_once __DIR__ . '/AnimeController.php';
             require_once __DIR__ . '/GenreController.php';
-            
+
+            $forYou         = [];
+            $groupedGenres  = [];
+            $showForYou     = false;
+
             $trending = AnimeController::trending();
             $hero = AnimeController::heroSlider();
             $adventure = AnimeController::adventure();
             $recent = AnimeController::recentlyAdded();
             $live = AnimeController::liveAiring();
-            // $forYou = AnimeController::forYou();
             $genres = GenreController::all();
-            $groupedGenres = [];
+
+            if (isset($_SESSION['user_id'])) {
+                $forYou = AnimeController::forYouFromFollowed((int)$_SESSION['user_id'], 8);
+                $showForYou = !empty($forYou);
+            }
+
 
             foreach ($genres as $genre) {
                 $firstLetter = strtoupper($genre['name'][0]);

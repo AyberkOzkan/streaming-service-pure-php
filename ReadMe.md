@@ -1,4 +1,4 @@
-# Streaming Service Web (Pure PHP + Nginx + PostgreSQL + HTML + CSS + JS)
+# Streaming Service Web (Pure PHP + Nginx + PostgreSQL + HTML + CSS + JS + API)
 
 Bu notlar, saf PHP ile geliştirdiğim `streamingservice` adlı web projesinin sıfırdan kurulumu içindir.
 
@@ -169,6 +169,7 @@ streamingservice/
 - [x] İzleme sayfasının eklenmesi
 - [x] Profil sayfasının eklenmesi
 - [x] Profil sayfasına kullanıcıların favorilediği animelerin ve yorumlarının gösterilmesi
+- [x] Animelerin aranabilmesi için arama fonksiyonu eklenmesi
 - [ ] 
 
 

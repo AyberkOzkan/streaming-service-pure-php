@@ -2391,3 +2391,26 @@ ol {
 		padding: 18px 20px 20px;
 	}
 }
+
+/* İkonu rahat tıklanır bir “buton” yap */
+#search-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px; height:36px;
+  line-height:36px;
+  cursor:pointer;
+  position:relative; z-index:10; /* olası örtüşmeyi aş */
+}
+
+#search-toggle .icon_search{
+  display:inline-block;
+  font-size:18px;
+  line-height:1;
+  pointer-events:none; /* tıklama anchor’a gitsin */
+}
+
+#search-box{ 
+	margin-left:8px;
+	position:relative;
+}

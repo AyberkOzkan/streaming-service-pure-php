@@ -54,4 +54,64 @@
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         }
+
+        public function countAll(): int {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM comments");
+            return (int)$stmt->fetchColumn();
+        }
+
+        public function listPaginatedAll(int $page=1, int $perPage=20, ?string $q=null): array {
+            $offset = ($page - 1) * $perPage;
+            $params = [];
+            $where = 'WHERE 1=1';
+
+            if ($q) {
+                // Search in user name, email, body
+                $where .= " AND (u.name ILIKE :q OR u.email ILIKE :q OR c.body ILIKE :q)";
+                $params[':q'] = "%{$q}%";
+            }
+
+            $sql = "
+                SELECT
+                    c.id, c.user_id, c.anime_id, c.body, c.created_at,
+                    u.name AS user_name, u.email AS user_email
+                FROM comments c
+                JOIN users u ON u.id = c.user_id
+                $where
+                ORDER BY c.id DESC
+                LIMIT :limit OFFSET :offset
+            ";
+            $stmt = $this->db->prepare($sql);
+            foreach ($params as $k=>$v) $stmt->bindValue($k, $v, PDO::PARAM_STR);
+            $stmt->bindValue(':limit',  $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset,  PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
+
+        public function countFilteredAll(?string $q=null): int {
+            $params = [];
+            $where = 'WHERE 1=1';
+            if ($q) {
+                $where .= " AND (u.name ILIKE :q OR u.email ILIKE :q OR c.body ILIKE :q)";
+                $params[':q'] = "%{$q}%";
+            }
+            $sql = "
+                SELECT COUNT(*)
+                FROM comments c
+                JOIN users u ON u.id = c.user_id
+                $where
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return (int)$stmt->fetchColumn();
+        }
+
+        /** Admin-level delete (no owner check) */
+        public function adminDelete(int $id): bool {
+            $stmt = $this->db->prepare("DELETE FROM comments WHERE id = :id");
+            return $stmt->execute([':id' => $id]);
+        }
+
+
     }

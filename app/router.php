@@ -29,6 +29,13 @@
         return;
     }
 
+    if ($uri === '/admin' || $uri === '/admin/') {
+        require_once __DIR__ . '/controllers/Admin/DashboardController.php';
+        $c = new Admin_DashboardController();
+        $c->index();
+        return;
+    }
+
 
     switch ($uri) {
         case '/':
@@ -109,6 +116,73 @@
                 http_response_code(405); echo "Method Not Allowed";
             }
             break;
+        case '/admin':
+        case '/admin/':
+            require_once __DIR__ . '/controllers/Admin/DashboardController.php';
+            $controller = new Admin_DashboardController();
+            $controller->index();
+            break;
+        case '/admin/admins':
+        case '/admin/admins/':
+            require_once __DIR__ . '/controllers/Admin/AdminController.php';
+            $controller = new Admin_AdminsController();
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // form: yeni admin ekle
+                $controller->create();
+            } else {
+                // liste sayfası
+                $controller->index();
+            }
+            break;
+        case '/admin/admins/create':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                require_once __DIR__ . '/controllers/Admin/AdminController.php';
+                $controller = new Admin_AdminsController();
+                $controller->create();
+            } else {
+                http_response_code(405); echo 'Method Not Allowed';
+            }
+            break;
+        case '/admin/admins/delete':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AdminController.php';
+            $controller = new Admin_AdminsController();
+            $controller->delete();
+            break;
+        case '/admin/users':
+            require_once __DIR__.'/controllers/Admin/UsersController.php';
+            $controller = new Admin_UsersController();
+            $controller->index();
+            break;
+
+        case '/admin/users/ban':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__.'/controllers/Admin/UsersController.php';
+            $controller = new Admin_UsersController();
+            $controller->ban();
+            break;
+
+        case '/admin/users/unban':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__.'/controllers/Admin/UsersController.php';
+            $controller = new Admin_UsersController();
+            $controller->unban();
+            break;
+        case '/admin/comments':
+            require_once __DIR__ . '/controllers/Admin/CommentsController.php';
+            $controller = new Admin_CommentsController();
+            $controller->index();
+            break;
+
+        case '/admin/comments/delete':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/CommentsController.php';
+            $controller = new Admin_CommentsController();
+            $controller->delete();
+            break;
+
+
+
 
         default:
             http_response_code(404);

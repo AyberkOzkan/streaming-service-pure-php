@@ -62,28 +62,42 @@ Varsayılan olarak gelen Apache web sunucusu kaldırıldı:
 streamingservice/
     app/
     ├── controllers/
+    │     ├── Admin/
+    │     │     ├── AdminController.php
+    │     │     ├── CommentsController.php
+    │     │     ├── DashboardController.php
+    │     │     └── UsersController.php
     │     ├── AnimeController.php
     │     ├── AuthController.php
     │     ├── CommentController.php
     │     ├── FollowController.php
     │     ├── GenreController.php
     │     ├── HomeController.php
-    │     ├── ProfileController.php
+    │     └── ProfileController.php
     ├── models/
+    │     ├── AdminModel.php
     │     ├── FollowModel.php
     │     ├── CommentModel.php
     │     ├── User.php
     │     └── UserModel.php
     ├── views/
+    │     ├── admin/
+    │     │     ├── admins/
+    │     │     ├── comments/
+    │     │     ├── layouts/
+    │     │     │     ├── header.php 
+    │     │     │     └── footer.php
+    │     │     ├── users/
+    │     │     └── index.php
     │     ├── anime/
     │     │     ├── categories.php
     │     │     ├── details.php
-    │     │     ├── watch.php
+    │     │     └── watch.php
     │     ├── auth/
     │     │     ├── login.php
-    │     │     ├── register.php
+    │     │     └── register.php
     │     ├── home/
-    │     │     ├── index.php 
+    │     │     └── index.php 
     │     ├── layouts/
     │     │     ├── header.php 
     │     │     └── footer.php
@@ -170,7 +184,16 @@ streamingservice/
 - [x] Profil sayfasının eklenmesi
 - [x] Profil sayfasına kullanıcıların favorilediği animelerin ve yorumlarının gösterilmesi
 - [x] Animelerin aranabilmesi için arama fonksiyonu eklenmesi
-- [ ] 
+- [x] Admin Panelinin oluşturulması
+
+
+
+CREATE TABLE admins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 
 ---

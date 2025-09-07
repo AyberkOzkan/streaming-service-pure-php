@@ -40,3 +40,9 @@ backup_*.tar.gz
 # Örnek veritabanı dosyası (eğer dump eklenecekse)
 *.sql
 *.sql.gz
+
+#admin paneli
+# app/views/admin/
+# app/controllers/Admin/
+public/css/admin.css
+public/js/admin/

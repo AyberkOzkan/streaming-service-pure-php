@@ -79,6 +79,12 @@
             return (int)$stmt->fetchColumn();
         }
 
+        public function countAll(): int {
+            $stmt = $this->db->query("SELECT COUNT(*) FROM follows");
+            return (int)$stmt->fetchColumn();
+        }
+
+
     }
 
 ?>

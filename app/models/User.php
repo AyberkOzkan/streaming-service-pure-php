@@ -11,18 +11,23 @@
             if (empty($name) || empty($email) || empty($password)) {
                 throw new Exception("Name, email, and password are required.");
             }
-            
+
             if ($this->getUserByEmail($email)) {
-                // Kullanıcı zaten varsa hata dönebilir
                 throw new Exception("User already exists.");
             }
-            $stmt = $this->db->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+
+            $stmt = $this->db->prepare("
+                INSERT INTO users (name, email, password) 
+                VALUES (:name, :email, :password)
+            ");
+
             $stmt->execute([
                 ':name' => $name,
-                ':email' => $email,
+                ':email' => strtolower(trim($email)),
                 ':password' => $password
             ]);
         }
+
 
         public function getUserByEmail($email) {
             $email = strtolower(trim($email));
@@ -31,16 +36,27 @@
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new Exception("Invalid email format.");
             }
-            
-            $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+
+            $stmt = $this->db->prepare("
+                SELECT id, name, email, password, is_banned, banned_reason
+                FROM users
+                WHERE LOWER(email) = :email
+                LIMIT 1
+            ");
             $stmt->execute([':email' => $email]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
+
 
         public function getUserById($id) {
             $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id");
             $stmt->execute([':id' => $id]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        public function touchLastLoginAt(int $userId): void {
+            $stmt = $this->db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
+            $stmt->execute([':id' => $userId]);
         }
 
 

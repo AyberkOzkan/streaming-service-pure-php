@@ -3,7 +3,6 @@
     class AuthController {
         public function showRegisterForm() {
             if (isset($_SESSION['user_id'])) {
-                // Eğer kullanıcı zaten giriş yapmışsa, anasayfaya yönlendir
                 header('Location: /');
                 exit;
             }
@@ -12,14 +11,12 @@
         }
 
         public function register() {
-            // Validasyon, kullanıcı kaydı ve yönlendirme işlemleri
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $email = $_POST['email'] ?? '';
                 $name = $_POST['name'] ?? '';
                 $password = $_POST['password'] ?? '';
 
                 if (empty($email) || empty($name) || empty($password)) {
-                    // Hatalı giriş durumunda hata mesajı gösterilebilir
                     echo "All fields are required.";
                     return;
                 }
@@ -29,22 +26,18 @@
                     $userModel = new User();
                     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
                     $userModel->createUser($name, $email, $hashedPassword);
-                    // Kayıt başarılı ise oturum açma işlemi yapılabilir
                     header('Location: /login');
                     exit;
                 } else {
-                    // Hatalı giriş durumunda hata mesajı gösterilebilir
                     echo "Invalid input.";
                 }
             } else {
-                // Hatalı istek durumunda hata mesajı gösterilebilir
                 echo "Invalid request method.";
             }
         }
 
         public function showLoginForm() {
             if (isset($_SESSION['user_id'])) {
-                // Eğer kullanıcı zaten giriş yapmışsa, anasayfaya yönlendir
                 header('Location: /');
                 exit;
             }
@@ -58,7 +51,6 @@
                 $password = $_POST['password'] ?? '';
 
                 if (empty($email) || empty($password)) {
-                    // Hatalı giriş durumunda hata mesajı gösterilebilir
                     echo "Email and password are required.";
                     return;
                 }
@@ -68,7 +60,15 @@
                 $user = $userModel->getUserByEmail($email);
 
                 if ($user && password_verify($password, $user['password'])) {
-                    // Başarılı giriş işlemleri
+                    // Ban check happens AFTER verifying the password
+                    if (!empty($user['is_banned'])) {
+                        session_start();
+                        $_SESSION['login_error'] = "Your account is banned. Contact support if you believe this is a mistake.";
+                        header('Location: /login');
+                        exit;
+                    }
+
+                    $userModel->touchLastLoginAt((int)$user['id']);
                     session_start();
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_name'] = $user['name'];
@@ -76,8 +76,8 @@
                     header('Location: /');
                     exit;
                 } else {
-                    // Hatalı giriş durumunda hata mesajı gösterilebilir
-                    $_SESSION['login_error'] = "Email and password are required.";
+                    session_start();
+                    $_SESSION['login_error'] = "Invalid email or password.";
                     header('Location: /login');
                     exit;
                 }

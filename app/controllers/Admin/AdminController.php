@@ -4,6 +4,7 @@
     require_once __DIR__ . '/../../models/AdminModel.php';
     require_once __DIR__ . '/../../models/UserModel.php';
 
+
     class Admin_AdminsController
     {
         public function index(): void {

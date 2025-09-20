@@ -1,6 +1,8 @@
 <?php 
     require_once __DIR__ . '/../models/FollowModel.php';
     require_once __DIR__ . '/../models/CommentModel.php';
+    require_once __DIR__ . '/../models/AnimeLocalModel.php';
+
 
     class AnimeController 
     {
@@ -177,6 +179,13 @@
                 }
             }
 
+            $alm = new AnimeLocalModel();
+            $localEpisodes = $alm->episodesByMalId($malId);
+            $hasLocalEpisodes = !empty($localEpisodes);
+            $manageEpisodesUrl = (function_exists('isSuperAdmin') && isSuperAdmin())
+                ? "/admin/anime/episodes/by-mal?mal_id={$malId}"
+                : null;
+
             $followModel = new FollowModel();
             $isFollowing = false;
             if (isset($_SESSION['user_id'])) {
@@ -267,44 +276,63 @@
             $json = cachedGet("{$baseUrl}/anime/{$malId}");
 
             if (!$json) {
-                http_response_code(404); 
-                echo "Anime not found."; 
+                http_response_code(404);
+                echo "Anime not found.";
                 return;
             }
 
             $data = json_decode($json, true);
             $animeDetails = $data['data'] ?? null;
-            
-            if (!$animeDetails) { 
+
+            if (!$animeDetails) {
                 http_response_code(404);
                 echo "Anime not found.";
-                return; 
+                return;
             }
-            
-            $videosJson = cachedGet("{$baseUrl}/anime/{$malId}/videos");
-            $videos = $videosJson ? (json_decode($videosJson, true)['data'] ?? []) : [];
-            $promos = $videos['promo'] ?? [];
-            $currentPromoUrl = null;
+
+            // Defaults
+            $currentPromoUrl   = null;
             $currentPromoTitle = null;
+            $currentEpisode    = max(1, (int)$ep);
+            $episodeCount      = (int)($animeDetails['episodes'] ?? 12);
+            if ($episodeCount <= 0) $episodeCount = 12;
 
-            if (!empty($promos)) {
-                $first = $promos[0];
-                $currentPromoUrl   = $first['trailer']['embed_url'] ?? $first['trailer']['url'] ?? null;
-                $currentPromoTitle = $first['title'] ?? $animeDetails['title'];
+            // === LOCAL FIRST: if admin uploaded episodes, use them ===
+            $alm = new AnimeLocalModel();
+            $localEpisodes = $alm->episodesByMalId($malId);
+
+            if (!empty($localEpisodes)) {
+                // find requested episode or fallback to first
+                $current = null;
+                foreach ($localEpisodes as $row) {
+                    if ((int)$row['ep_no'] === (int)$ep) { $current = $row; break; }
+                }
+                if (!$current) { $current = $localEpisodes[0]; }
+
+                $currentPromoUrl   = $current['stream_url'] ?? null;
+                $currentPromoTitle = $current['title'] ?? ($animeDetails['title'] ?? 'Episode');
+                $currentEpisode    = (int)$current['ep_no'];
+                $episodeCount      = count($localEpisodes);
+            } else {
+                // === FALLBACK: Jikan promos/trailers ===
+                $videosJson = cachedGet("{$baseUrl}/anime/{$malId}/videos");
+                $videos = $videosJson ? (json_decode($videosJson, true)['data'] ?? []) : [];
+                $promos = $videos['promo'] ?? [];
+
+                if (!empty($promos)) {
+                    $first = $promos[0];
+                    $currentPromoUrl   = $first['trailer']['embed_url'] ?? ($first['trailer']['url'] ?? null);
+                    $currentPromoTitle = $first['title'] ?? ($animeDetails['title'] ?? 'Promo');
+                }
             }
 
-            $episodeCount = (int)($animeDetails['episodes'] ?? 12);
-            if ($episodeCount <= 0) $episodeCount = 12;
-            $currentEpisode = max(1, (int)$ep);
-
-            // İleride ep→promo eşlemesi yapmak istersen buraya haritalama yazarsın.
-            // Şimdilik tüm ep butonları aynı trailer’ı oynatacak şekilde basit bir oynatıcı gösteriyoruz.
-            // Comments (aynı details’teki gibi)
+            // Comments
             $commentModel = new CommentModel();
             $comments = $commentModel->listByAnime($malId);
 
             require_once __DIR__ . '/../views/anime/watch.php';
         }
+
 
 
 

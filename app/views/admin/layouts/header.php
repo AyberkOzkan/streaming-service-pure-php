@@ -69,6 +69,14 @@
               <span class="oi mr-2"></span> Comments
             </a>
           </li>
+          <?php if (isSuperAdmin()): ?>
+            <li class="nav-item">
+              <a class="nav-link <?= $isActive('/admin/anime') ?>" href="/admin/anime">
+                <span class="oi mr-2"></span> Anime
+              </a>
+            </li>
+          <?php endif; ?>
+
         </ul>
       </div>
     </aside>

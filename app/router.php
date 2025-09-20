@@ -154,14 +154,12 @@
             $controller = new Admin_UsersController();
             $controller->index();
             break;
-
         case '/admin/users/ban':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
             require_once __DIR__.'/controllers/Admin/UsersController.php';
             $controller = new Admin_UsersController();
             $controller->ban();
             break;
-
         case '/admin/users/unban':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
             require_once __DIR__.'/controllers/Admin/UsersController.php';
@@ -173,17 +171,68 @@
             $controller = new Admin_CommentsController();
             $controller->index();
             break;
-
         case '/admin/comments/delete':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
             require_once __DIR__ . '/controllers/Admin/CommentsController.php';
             $controller = new Admin_CommentsController();
             $controller->delete();
             break;
+        case '/admin/anime':
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->index();
+            break;
+        case '/admin/anime/new':
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->new();
+            break;
+        case '/admin/anime/create':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->create();
+            break;
+        case '/admin/anime/edit':
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->edit();
+            break;
+        case '/admin/anime/update':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->update();
+            break;
+        case '/admin/anime/delete':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->delete();
+            break;
+        case '/admin/anime/episodes':
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->episodes();
+            break;
+        case '/admin/anime/episodes/create':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->addEpisode();
+            break;
 
-
-
-
+        case '/admin/anime/episodes/delete':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo 'Method Not Allowed'; break; }
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->deleteEpisode();
+            break;
+        case '/admin/anime/episodes/by-mal':
+            require_once __DIR__ . '/controllers/Admin/AnimeController.php';
+            $controller = new Admin_AnimeController();
+            $controller->manageByMal();
+            break;
         default:
             http_response_code(404);
             echo "404 Not Found";

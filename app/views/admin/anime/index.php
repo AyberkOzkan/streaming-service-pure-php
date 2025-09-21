@@ -54,13 +54,13 @@
                     <td><?= htmlspecialchars($r['total_episodes'] ?? '—') ?></td>
                     <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($r['created_at']))) ?></td>
                     <td class="text-right">
-                    <a href="/admin/anime/edit?id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a href="/admin/anime/episodes?anime_id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-info">Episodes</a>
-                    <form method="POST" action="/admin/anime/delete" class="d-inline" onsubmit="return confirm('Delete this anime?');">
-                        <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
-                        <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
-                        <button class="btn btn-sm btn-outline-danger">Delete</button>
-                    </form>
+                        <a href="/admin/anime/edit?id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a href="/admin/anime/episodes?anime_id=<?= (int)$r['id'] ?>" class="btn btn-sm btn-outline-info">Episodes</a>
+                        <form method="POST" action="/admin/anime/delete" class="d-inline" onsubmit="return confirm('Delete this anime?');">
+                            <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
+                            <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
+                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -83,18 +83,18 @@
         </div>
     </div>
     <div id="animeHelpContainer" style="position:relative;">
-        <button type="button"
+        <!-- <button type="button"
             class="dismiss btn btn-sm btn-outline"
             onclick="dismissAnimeHelp()"
             aria-label="Dismiss"
             title="Close">&times;
-        </button>
+        </button> -->
     </div>
-    <div class="alert-help mb-gap ml-5" id="animeHelpBox" hidden>
+    <div class="alert-help mb-gap" id="animeHelpBox" hidden>
         <div class="help-head">
 
             <div class="help-title">
-                <span class="dot"></span>
+                <!-- <span class="dot"></span> -->
                 <span>How it works</span>
             </div>
 

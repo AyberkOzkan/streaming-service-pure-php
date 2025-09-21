@@ -274,64 +274,74 @@
         public static function watch(int $malId, int $ep = 1): void {
             $baseUrl = getenv('JIKAN_API_URL') ?: 'https://api.jikan.moe/v4';
             $json = cachedGet("{$baseUrl}/anime/{$malId}");
-
-            if (!$json) {
-                http_response_code(404);
-                echo "Anime not found.";
-                return;
-            }
-
+            if (!$json) { http_response_code(404); echo "Anime not found."; return; }
             $data = json_decode($json, true);
             $animeDetails = $data['data'] ?? null;
+            if (!$animeDetails) { http_response_code(404); echo "Anime not found."; return; }
 
-            if (!$animeDetails) {
-                http_response_code(404);
-                echo "Anime not found.";
-                return;
-            }
+            // View’a verilecek linkler
+            $detailsUrl   = "/anime/{$malId}";
+            $watchBaseUrl = "{$detailsUrl}/watch";
 
-            // Defaults
-            $currentPromoUrl   = null;
-            $currentPromoTitle = null;
-            $currentEpisode    = max(1, (int)$ep);
-            $episodeCount      = (int)($animeDetails['episodes'] ?? 12);
+            // Varsayılanlar
+            $currentEpisode = max(1, (int)$ep);
+            $episodeCount   = (int)($animeDetails['episodes'] ?? 12);
             if ($episodeCount <= 0) $episodeCount = 12;
 
-            // === LOCAL FIRST: if admin uploaded episodes, use them ===
+            // LOCAL ÖNCE: MAL id'ye bağlı yerel ep var mı?
             $alm = new AnimeLocalModel();
             $localEpisodes = $alm->episodesByMalId($malId);
 
+            $localPlayerUrl   = null;
+            $playerPoster     = null;
+            $currentPromoUrl  = null;
+            $currentPromoTitle= $animeDetails['title'] ?? 'Video';
+            $episodes         = []; // local ep listesi varsa doldurulacak
+
             if (!empty($localEpisodes)) {
-                // find requested episode or fallback to first
+                // ep seç
                 $current = null;
                 foreach ($localEpisodes as $row) {
                     if ((int)$row['ep_no'] === (int)$ep) { $current = $row; break; }
                 }
                 if (!$current) { $current = $localEpisodes[0]; }
-
-                $currentPromoUrl   = $current['stream_url'] ?? null;
-                $currentPromoTitle = $current['title'] ?? ($animeDetails['title'] ?? 'Episode');
+                $localPlayerUrl    = $current['stream_url'] ?? null;
+                $currentPromoTitle = $current['title'] ?? $currentPromoTitle;
                 $currentEpisode    = (int)$current['ep_no'];
                 $episodeCount      = count($localEpisodes);
+                $episodes          = $localEpisodes; // view “local list varsa onu basar”
             } else {
-                // === FALLBACK: Jikan promos/trailers ===
+                // FALLBACK: Jikan promos
                 $videosJson = cachedGet("{$baseUrl}/anime/{$malId}/videos");
                 $videos = $videosJson ? (json_decode($videosJson, true)['data'] ?? []) : [];
                 $promos = $videos['promo'] ?? [];
-
                 if (!empty($promos)) {
                     $first = $promos[0];
                     $currentPromoUrl   = $first['trailer']['embed_url'] ?? ($first['trailer']['url'] ?? null);
-                    $currentPromoTitle = $first['title'] ?? ($animeDetails['title'] ?? 'Promo');
+                    $currentPromoTitle = $first['title'] ?? $currentPromoTitle;
                 }
             }
 
-            // Comments
+            // Yorumlar (mevcut yapın MAL id’ye bağlı)
             $commentModel = new CommentModel();
             $comments = $commentModel->listByAnime($malId);
 
-            require_once __DIR__ . '/../views/anime/watch.php';
+            // View’a sadece hazır değişkenleri ver
+            require __DIR__ . '/../views/anime/watch.php';
         }
+
+        public static function mapJikanForRecent(array $items): array {
+            foreach ($items as &$a) {
+                // aired.from -> timestamp; yoksa 0
+                $from = $a['aired']['from'] ?? null;
+                $a['added_ts'] = $from ? strtotime($from) : 0;
+                $a['local_id'] = null;
+                $a['source']   = 'jikan';
+            }
+            return $items;
+        }
+
+
 
 
 

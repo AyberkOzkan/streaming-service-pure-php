@@ -185,6 +185,9 @@ streamingservice/
 - [x] Profil sayfasına kullanıcıların favorilediği animelerin ve yorumlarının gösterilmesi
 - [x] Animelerin aranabilmesi için arama fonksiyonu eklenmesi
 - [x] Admin Panelinin oluşturulması
+- [ ] Admin Panelinden animelerin eklenebilmesinin sağlanması
+- [x] Admin Paneline helpers eklenmesi
+- [ ] Admin Panelinden eklenen animelerin kullanıcıya gösterilebilmesi
 
 
 

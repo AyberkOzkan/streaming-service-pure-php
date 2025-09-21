@@ -6,8 +6,8 @@
       <div class="col-lg-12">
         <div class="breadcrumb__links">
           <a href="/"><i class="fa fa-home"></i> Home</a>
-          <a href="/anime/<?= $animeDetails['mal_id'] ?>">Details</a>
-          <span><?= htmlspecialchars($animeDetails['title']) ?> — Watch</span>
+          <a href="<?= htmlspecialchars($detailsUrl ?? '/') ?>">Details</a>
+          <span><?= htmlspecialchars($animeDetails['title'] ?? 'Watch') ?> — Watch</span>
         </div>
       </div>
     </div>
@@ -19,12 +19,23 @@
     <div class="row">
       <div class="col-lg-12">
 
+        <?php
+          $playerUrl = $localPlayerUrl ?: ($currentPromoUrl ?? null);
+          $isVideo = $playerUrl && preg_match('~\.(m3u8|mp4)(\?.*)?$~i', $playerUrl);
+        ?>
+
         <div class="anime__video__player" style="aspect-ratio:16/9;">
-          <?php if ($currentPromoUrl): ?>
-            <!-- Trailer embed -->
+          <?php if ($playerUrl && $isVideo): ?>
+            <video
+              src="<?= htmlspecialchars($playerUrl) ?>"
+              <?= !empty($playerPoster) ? 'poster="'.htmlspecialchars($playerPoster).'"' : '' ?>
+              controls playsinline
+              style="width:100%; height:100%; border-radius:12px; background:#000;">
+            </video>
+          <?php elseif ($playerUrl): ?>
             <iframe
-              src="<?= htmlspecialchars($currentPromoUrl) ?>"
-              title="<?= htmlspecialchars($currentPromoTitle ?? $animeDetails['title']) ?>"
+              src="<?= htmlspecialchars($playerUrl) ?>"
+              title="<?= htmlspecialchars($currentPromoTitle ?? ($animeDetails['title'] ?? 'Video')) ?>"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
@@ -32,7 +43,7 @@
             </iframe>
           <?php else: ?>
             <div class="text-white-50" style="padding:2rem; background:#111; border-radius:12px;">
-              Official trailer bulunamadı. Yine de bölümlere göz atabilirsiniz.
+              No playable source found.
             </div>
           <?php endif; ?>
         </div>
@@ -41,14 +52,32 @@
           <div class="section-title">
             <h5>Episodes</h5>
           </div>
-          <?php for ($i = 1; $i <= $episodeCount; $i++): ?>
-            <a
-              href="/anime/<?= $animeDetails['mal_id'] ?>/watch?ep=<?= $i ?>"
-              class="<?= $i === $currentEpisode ? 'active' : '' ?>"
-              style="margin:6px; display:inline-block;">
-              Ep <?= str_pad((string)$i, 2, '0', STR_PAD_LEFT) ?>
-            </a>
-          <?php endfor; ?>
+
+          <?php if (!empty($episodes)): ?>
+            <?php
+              // Local ep listesi (ep_no, title, stream_url)
+              usort($episodes, fn($a,$b) => (int)$a['ep_no'] <=> (int)$b['ep_no']);
+              foreach ($episodes as $epRow):
+                $no = (int)$epRow['ep_no']; if ($no<=0) continue;
+            ?>
+              <a
+                href="<?= htmlspecialchars(($watchBaseUrl ?? '#').'?ep='.$no) ?>"
+                class="<?= $no === (int)($currentEpisode ?? 1) ? 'active' : '' ?>"
+                style="margin:6px; display:inline-block;">
+                Ep <?= str_pad((string)$no, 2, '0', STR_PAD_LEFT) ?>
+              </a>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <?php for ($i = 1; $i <= max(1, (int)($episodeCount ?? 12)); $i++): ?>
+              <a
+                href="<?= htmlspecialchars(($watchBaseUrl ?? '#').'?ep='.$i) ?>"
+                class="<?= $i === (int)($currentEpisode ?? 1) ? 'active' : '' ?>"
+                style="margin:6px; display:inline-block;">
+                Ep <?= str_pad((string)$i, 2, '0', STR_PAD_LEFT) ?>
+              </a>
+            <?php endfor; ?>
+          <?php endif; ?>
+
         </div>
 
       </div>
@@ -83,7 +112,9 @@
           <div class="section-title"><h5>Your Comment</h5></div>
           <?php if (isset($_SESSION['user_id'])): ?>
             <form action="/comments/add" method="POST">
-              <input type="hidden" name="anime_id" value="<?= $animeDetails['mal_id'] ?>">
+              <?php if (!empty($animeDetails['mal_id'])): ?>
+                <input type="hidden" name="anime_id" value="<?= (int)$animeDetails['mal_id'] ?>">
+              <?php endif; ?>
               <textarea name="body" placeholder="Your Comment" required></textarea>
               <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
             </form>

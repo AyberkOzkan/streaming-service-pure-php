@@ -161,24 +161,39 @@
                             </div>
                         </div>
                         <div class="row">
-                            <?php foreach ($recent as $anime): ?>
+                            <?php foreach ($recent as $anime):
+                                $isLocal = !empty($anime['local_id']) && empty($anime['mal_id']);
+                                $href    = $isLocal ? ("/local/anime/" . (int)$anime['local_id'])
+                                                    : ("/anime/" . (int)$anime['mal_id']);
+                                $img     = $anime['images']['jpg']['image_url']
+                                            ?? ($anime['images']['jpg']['large_image_url'] ?? '/img/placeholder-vertical.jpg');
+                            ?>
                                 <div class="col-lg-4 col-md-6 col-sm-6">
                                     <div class="product__item">
-                                        <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($anime['images']['jpg']['large_image_url']) ?>">
-                                            <div class="ep"><?= $anime['episodes'] ?? '?' ?> Episodes</div>
-                                            <div class="comment"><i class="fa fa-star"></i> <?= $anime['score'] ?? 'N/A' ?></div>
-                                            <div class="view"><i class="fa fa-eye"></i> <?= number_format($anime['members']) ?></div>
+                                        <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($img) ?>">
+                                        <div class="ep"><?= htmlspecialchars($anime['episodes'] ?? '?') ?> Episodes</div>
+                                        <?php if (!$isLocal): ?>
+                                            <div class="comment"><i class="fa fa-star"></i> <?= htmlspecialchars($anime['score'] ?? 'N/A') ?></div>
+                                            <div class="view"><i class="fa fa-eye"></i> <?= number_format($anime['members'] ?? 0) ?></div>
+                                        <?php else: ?>
+                                            <div class="comment"><span class="badge badge-blue">Local</span></div>
+                                        <?php endif; ?>
                                         </div>
                                         <div class="product__item__text">
-                                            <ul>
-                                                <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
-                                                <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
-                                            </ul>
+                                            <?php if (!empty($anime['type']) || !empty($anime['status'])): ?>
+                                                <ul>
+                                                    <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
+                                                    <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
+                                                </ul>
+                                            <?php endif; ?>
                                             <h5>
-                                                <a href="/anime/<?= $anime['mal_id'] ?>">
+                                                <a href="<?= htmlspecialchars($href) ?>">
                                                     <?= htmlspecialchars($anime['title']) ?>
                                                 </a>
                                             </h5>
+                                            <?php if (!empty($anime['aired']['string'])): ?>
+                                                <small class="text-white-50"><?= htmlspecialchars($anime['aired']['string']) ?></small>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

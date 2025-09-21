@@ -164,4 +164,38 @@
             $st = $this->db->prepare("DELETE FROM anime_episodes WHERE id=:id");
             return $st->execute([':id'=>$id]);
         }
+
+        public function listLatestMapped(int $limit = 12): array {
+            $sql = "
+                SELECT id, mal_id, title, poster_url, release_date, total_episodes, created_at, updated_at
+                FROM animes
+                ORDER BY COALESCE(updated_at, created_at) DESC
+                LIMIT :limit
+            ";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+            // Jikan benzeri yapı + added_ts
+            $out = [];
+            foreach ($rows as $r) {
+                $out[] = [
+                    'local_id' => (int)$r['id'],
+                    'mal_id'   => $r['mal_id'] !== null ? (int)$r['mal_id'] : null,
+                    'title'    => $r['title'],
+                    'images'   => ['jpg' => ['image_url' => $r['poster_url']]],
+                    'episodes' => $r['total_episodes'],
+                    'members'  => 0,
+                    'aired'    => [
+                        'string' => $r['release_date'] ?? null,
+                        'from'   => $r['release_date'] ?? null,
+                    ],
+                    'added_ts' => strtotime($r['updated_at'] ?? $r['created_at'] ?? 'now'),
+                    'source'   => 'local',
+                ];
+            }
+            return $out;
+        }
+
     }

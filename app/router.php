@@ -233,6 +233,17 @@
             $controller = new Admin_AnimeController();
             $controller->manageByMal();
             break;
+        // /local/anime/{id}
+        case (preg_match('#^/local/anime/(\d+)$#', $uri, $m) ? true : false):
+            require_once __DIR__.'/controllers/LocalAnimeController.php';
+            LocalAnimeController::details((int)$m[1]);
+            break;
+        // /local/anime/{id}/watch?ep=1
+        case (preg_match('#^/local/anime/(\d+)/watch$#', $uri, $m) ? true : false):
+            require_once __DIR__.'/controllers/LocalAnimeController.php';
+            $ep = isset($_GET['ep']) ? (int)$_GET['ep'] : 1;
+            LocalAnimeController::watch((int)$m[1], $ep);
+            break;
         default:
             http_response_code(404);
             echo "404 Not Found";

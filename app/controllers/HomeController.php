@@ -4,6 +4,8 @@
         public function index() {
             require_once __DIR__ . '/AnimeController.php';
             require_once __DIR__ . '/GenreController.php';
+            require_once __DIR__ . '/../models/AnimeLocalModel.php';
+
 
             $forYou         = [];
             $groupedGenres  = [];
@@ -12,7 +14,28 @@
             $trending = AnimeController::trending();
             $hero = AnimeController::heroSlider();
             $adventure = AnimeController::adventure();
-            $recent = AnimeController::recentlyAdded();
+            $limitRecent = 12;
+            // Jikan "recent"
+            $recentJikan = AnimeController::recentlyAdded($limitRecent);
+            foreach ($recentJikan as &$a) {
+                // tek tip görsel alanı
+                if (!isset($a['images']['jpg']['image_url'])) {
+                    $a['images']['jpg']['image_url'] =
+                        $a['images']['jpg']['large_image_url']
+                        ?? ($a['images']['webp']['large_image_url'] ?? null);
+                }
+                // Jikan tarafında "eklenme" için aired.from'u kullan (yoksa 0)
+                $from = $a['aired']['from'] ?? null;
+                $a['added_ts'] = $from ? strtotime($from) : 0;
+                $a['local_id'] = null;
+                $a['source']   = 'jikan';
+            }
+            unset($a);
+            $alm = new AnimeLocalModel();
+            $recentLocal = $alm->listLatestMapped($limitRecent);
+            $recentCombined = array_merge($recentLocal, $recentJikan);
+            usort($recentCombined, fn($x,$y) => ($y['added_ts'] ?? 0) <=> ($x['added_ts'] ?? 0));
+            $recent = array_slice($recentCombined, 0, $limitRecent);
             $live = AnimeController::liveAiring();
             $genres = GenreController::all();
 
@@ -20,7 +43,6 @@
                 $forYou = AnimeController::forYouFromFollowed((int)$_SESSION['user_id'], 8);
                 $showForYou = !empty($forYou);
             }
-
 
             foreach ($genres as $genre) {
                 $firstLetter = strtoupper($genre['name'][0]);

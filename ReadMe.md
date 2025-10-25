@@ -185,10 +185,11 @@ streamingservice/
 - [x] Profil sayfasına kullanıcıların favorilediği animelerin ve yorumlarının gösterilmesi
 - [x] Animelerin aranabilmesi için arama fonksiyonu eklenmesi
 - [x] Admin Panelinin oluşturulması
-- [ ] Admin Panelinden animelerin eklenebilmesinin sağlanması
+- [x] Admin Panelinden animelerin eklenebilmesinin sağlanması
 - [x] Admin Paneline helpers eklenmesi
-- [ ] Admin Panelinden eklenen animelerin kullanıcıya gösterilebilmesi
-
+- [x] Admin Panelinden eklenen animelerin kullanıcıya gösterilebilmesi
+- [x] Trailer'ların youtube'dan eklenebilmesi için geliştirme yapılması
+- [x] Admin Panelinden eklenen içeriklerin kullanıcılar tarafından search edilebilmesi ve takip edebilmesinin sağlanması
 
 
 CREATE TABLE admins (
@@ -197,7 +198,6 @@ CREATE TABLE admins (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 ---
 

@@ -191,21 +191,32 @@
                         <p class="text-white-50">You don't have any anime you follow yet.</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($animeList as $anime): ?>
+                    <?php foreach ($animeList as $a): ?>
                         <div class="col-lg-4 col-md-6 col-sm-6">
                             <div class="product__item">
-                                <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($anime['images']['jpg']['large_image_url'] ?? ($anime['images']['webp']['large_image_url'] ?? '/img/placeholder.jpg')) ?>">
-                                    <div class="ep"><?= $anime['episodes'] ?? '?' ?> Episodes</div>
-                                    <div class="comment"><i class="fa fa-star"></i> <?= $anime['score'] ?? 'N/A' ?></div>
-                                    <div class="view"><i class="fa fa-eye"></i> <?= number_format($anime['members'] ?? 0) ?></div>
-                                </div>
-                                <div class="product__item__text">
-                                    <ul>
-                                        <li><?= htmlspecialchars($anime['type'] ?? 'Unknown') ?></li>
-                                        <li><?= htmlspecialchars($anime['status'] ?? 'Unknown') ?></li>
-                                    </ul>
-                                    <h5><a href="/anime/<?= $anime['mal_id'] ?>"><?= htmlspecialchars($anime['title']) ?></a></h5>
-                                </div>
+                            <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($a['img'] ?? '/img/placeholder.jpg') ?>">
+                                <div class="ep"><?= htmlspecialchars($a['episodes'] ?? '?') ?> Episodes</div>
+
+                                <?php if (!empty($a['is_local'])): ?>
+                                <div class="comment"><span class="badge badge-blue">Local</span></div>
+                                <?php else: ?>
+                                <div class="comment"><i class="fa fa-star"></i> <?= htmlspecialchars($a['score'] ?? 'N/A') ?></div>
+                                <div class="view"><i class="fa fa-eye"></i> <?= number_format($a['members'] ?? 0) ?></div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="product__item__text">
+                                <?php if (empty($a['is_local'])): ?>
+                                <ul>
+                                    <li><?= htmlspecialchars($a['type'] ?? 'Unknown') ?></li>
+                                    <li><?= htmlspecialchars($a['status'] ?? 'Unknown') ?></li>
+                                </ul>
+                                <?php endif; ?>
+
+                                <h5><a href="<?= htmlspecialchars($a['href'] ?? '#') ?>">
+                                <?= htmlspecialchars($a['title'] ?? 'Untitled') ?>
+                                </a></h5>
+                            </div>
                             </div>
                         </div>
                     <?php endforeach; ?>

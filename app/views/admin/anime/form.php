@@ -54,6 +54,56 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>Type</label>
+                        <select name="type" class="form-control">
+                        <?php
+                            $types = ['TV','Movie','OVA','ONA','Special','Music'];
+                            $sel = $item['type'] ?? '';
+                            foreach ($types as $t) {
+                            $s = $sel===$t ? 'selected' : '';
+                            echo "<option value=\"{$t}\" {$s}>{$t}</option>";
+                            }
+                        ?>
+                        <option value="" <?= empty($sel)?'selected':'' ?>>—</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                        <?php
+                            $statuses = ['Airing','Finished Airing','Not yet aired'];
+                            $sel = $item['status'] ?? '';
+                            foreach ($statuses as $st) {
+                            $s = $sel===$st ? 'selected' : '';
+                            echo "<option value=\"{$st}\" {$s}>{$st}</option>";
+                            }
+                        ?>
+                        <option value="" <?= empty($sel)?'selected':'' ?>>—</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label>Duration (minutes)</label>
+                        <input type="number" name="duration_minutes" class="form-control"
+                            value="<?= htmlspecialchars($item['duration_minutes'] ?? '') ?>">
+                    </div>
+                    </div>
+
+                    <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Studios (comma separated)</label>
+                        <input type="text" name="studios" class="form-control"
+                            value="<?= htmlspecialchars($item['studios'] ?? '') ?>">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Genres (comma separated)</label>
+                        <input type="text" name="genres" class="form-control"
+                            value="<?= htmlspecialchars($item['genres'] ?? '') ?>">
+                    </div>
+                </div>
                 <button class="btn btn-primary"><?= $item ? 'Update' : 'Create' ?></button>
                  <a class="btn btn-light" href="/admin/anime">Cancel</a>
             </form>

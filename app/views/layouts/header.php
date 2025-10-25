@@ -91,7 +91,6 @@
         </div>
     </header>
     <!-- Header End -->
-
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const searchBox   = document.getElementById("search-box");
@@ -133,22 +132,24 @@
         const renderResults = (items) => {
             resultsBox.innerHTML = "";
             if (!items || items.length === 0) {
-            resultsBox.innerHTML = "<div style='padding:8px;color:#aaa;'>No results found</div>";
-            resultsBox.style.display = "block";
-            activeIdx = -1;
-            return;
+                resultsBox.innerHTML = "<div style='padding:8px;color:#aaa;'>No results found</div>";
+                resultsBox.style.display = "block";
+                activeIdx = -1;
+                return;
             }
             items.forEach((anime, i) => {
-            const row = document.createElement("a");
-            row.href = "/anime/" + anime.mal_id;
-            row.style.cssText = "display:flex;align-items:center;padding:8px;color:#eee;text-decoration:none;border-bottom:1px solid #333;gap:8px;";
-            row.setAttribute("data-idx", i);
-            row.innerHTML = `
-                <img src="${anime.images?.jpg?.image_url || '/img/placeholder.jpg'}"
-                    width="40" height="55" style="border-radius:4px;object-fit:cover;">
-                <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${anime.title}</span>`;
-            row.addEventListener("mouseenter", () => highlight(i));
-            resultsBox.appendChild(row);
+                const row = document.createElement("a");
+                // backend her item için uygun href verdi
+                row.href = anime.href || (anime.mal_id ? ("/anime/" + anime.mal_id) : "#");
+                row.style.cssText = "display:flex;align-items:center;padding:8px;color:#eee;text-decoration:none;border-bottom:1px solid #333;gap:8px;";
+                row.setAttribute("data-idx", i);
+                const img = (anime.images && anime.images.jpg && anime.images.jpg.image_url) ? anime.images.jpg.image_url : '/img/placeholder.jpg';
+                // const badge = anime.source === 'local' ? `<span style="font-size:10px;background:#2a66f0;color:#fff;padding:2px 4px;border-radius:3px;margin-left:6px;">Local</span>` : "";
+                row.innerHTML = `
+                <img src="${img}" width="40" height="55" style="border-radius:4px;object-fit:cover;">
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${anime.title}</span>`;
+                row.addEventListener("mouseenter", () => highlight(i));
+                resultsBox.appendChild(row);
             });
             resultsBox.style.display = "block";
             activeIdx = -1;
@@ -159,13 +160,15 @@
             if (controller) controller.abort();
             controller = new AbortController();
 
-            fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=5`, { signal: controller.signal })
-            .then(r => r.ok ? r.json() : Promise.reject())
-            .then(d => { const items = d?.data || []; cache.set(q, items); renderResults(items); })
-            .catch(err => { if (err?.name !== "AbortError") {
-                resultsBox.innerHTML = "<div style='padding:8px;color:#aaa;'>Error loading results</div>";
-                resultsBox.style.display = "block";
-            }});
+            fetch(`/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
+                .then(r => r.ok ? r.json() : Promise.reject())
+                .then(d => { const items = d?.data || []; cache.set(q, items); renderResults(items); })
+                .catch(err => {
+                if (err?.name !== "AbortError") {
+                    resultsBox.innerHTML = "<div style='padding:8px;color:#aaa;'>Error loading results</div>";
+                    resultsBox.style.display = "block";
+                }
+                });
         };
 
         searchInput.addEventListener("input", () => {

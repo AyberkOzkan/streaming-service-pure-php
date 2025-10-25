@@ -65,3 +65,32 @@
         $role = normalize_role($am->getRoleByUserId((int)$_SESSION['user_id']) ?? '');
         return in_array($role, ['superadmin', 'super_admin'], true);
     }
+    
+    function normalizeEmbedUrl(?string $url): ?string {
+        if (!$url) return null;
+        $u = trim($url);
+
+        // YouTube kısa link
+        if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~i', $u, $m)) {
+            return "https://www.youtube-nocookie.com/embed/".$m[1];
+        }
+        // YouTube watch
+        if (preg_match('~youtube\.com/watch~i', $u)) {
+            $qs = [];
+            parse_str(parse_url($u, PHP_URL_QUERY) ?? '', $qs);
+            if (!empty($qs['v'])) {
+                $id = $qs['v'];
+                $start = 0;
+                // t=90 veya t=1m30s gibi durumlar için basit dönüşüm
+                if (!empty($qs['t'])) {
+                    if (ctype_digit((string)$qs['t'])) $start = (int)$qs['t'];
+                }
+                return "https://www.youtube-nocookie.com/embed/{$id}".($start ? "?start={$start}" : "");
+            }
+        }
+        // Vimeo
+        if (preg_match('~vimeo\.com/(?:video/)?(\d+)~i', $u, $m)) {
+            return "https://player.vimeo.com/video/".$m[1];
+        }
+        return $u;
+    }

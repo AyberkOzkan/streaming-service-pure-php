@@ -1,18 +1,24 @@
 <?php
+    require_once __DIR__ . '/controllers/SearchController.php';
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     error_log("Requested URI: " . $uri);
 
     // Follow işlemleri için yönlendirme
     if ($uri === '/follow/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once __DIR__ . '/controllers/FollowController.php';
-        FollowController::addFollow();
-        return;
+        FollowController::addFollow(); return;
     }
-
     if ($uri === '/follow/remove' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once __DIR__ . '/controllers/FollowController.php';
-        FollowController::removeFollow();
-        return;
+        FollowController::removeFollow(); return;
+    }
+    if ($uri === '/follow/local/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/controllers/FollowController.php';
+        FollowController::addLocal(); return;
+    }
+    if ($uri === '/follow/local/remove' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once __DIR__ . '/controllers/FollowController.php';
+        FollowController::removeLocal(); return;
     }
 
     if ($uri === '/comments/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -36,6 +42,7 @@
         return;
     }
 
+    if ($uri === '/search' && $_SERVER['REQUEST_METHOD']==='GET') { SearchController::quick(); exit; }
 
     switch ($uri) {
         case '/':

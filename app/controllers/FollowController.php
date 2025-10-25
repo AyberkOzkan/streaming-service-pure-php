@@ -3,48 +3,57 @@
 
     class FollowController
     {
-        public static function addFollow(): void
-        {
-            if (!isset($_SESSION['user_id']) || !isset($_POST['anime_id']) || !isset($_POST['anime_title'])) {
-                header('Location: /login');
-                exit;
-            }
+        public static function addFollow(): void {
+            if (!isset($_SESSION['user_id'])) { header('Location:/login'); return; }
 
-            $userId = $_SESSION['user_id'];
-            $animeId = $_POST['anime_id'] ?? null;
-            $animeTitle = $_POST['anime_title'] ?? null;
+            $userId     = (int)$_SESSION['user_id'];
+            $animeId    = (int)($_POST['anime_id'] ?? 0);
+            $animeTitle = trim($_POST['anime_title'] ?? '');
 
-            if (!$animeId || !$animeTitle) {
-                header('Location: /');
-                exit;
-            }
+            if (!$animeId || $animeTitle === '') { header('Location:/'); return; }
 
-            $followModel = new FollowModel();
-            $followModel->addFollow($userId, $animeId, $animeTitle);
+            $m = new FollowModel();
+            $m->addFollow($userId, $animeId, $animeTitle, 'mal');
 
-            header('Location: /anime/' . urlencode($animeId));
-            exit;
+            header('Location: /anime/' . urlencode((string)$animeId));
         }
 
-        public static function removeFollow(): void
-        {
-            if (!isset($_SESSION['user_id']) || !isset($_POST['anime_id'])) {
-                header('Location: /login');
-                exit;
-            }
+        public static function removeFollow(): void {
+            if (!isset($_SESSION['user_id'])) { header('Location:/login'); return; }
+            $userId  = (int)$_SESSION['user_id'];
+            $animeId = (int)($_POST['anime_id'] ?? 0);
 
-            $userId = $_SESSION['user_id'];
-            $animeId = $_POST['anime_id'] ?? null;
+            $m = new FollowModel();
+            $m->removeFollow($userId, $animeId, 'mal');
 
-            if (!$animeId) {
-                header('Location: /');
-                exit;
-            }
+            header('Location: /anime/' . urlencode((string)$animeId));
+        }
 
-            $followModel = new FollowModel();
-            $followModel->removeFollow($userId, $animeId);
+        // Local tabanlı
+        public static function addLocal(): void {
+            if (!isset($_SESSION['user_id'])) { header('Location:/login'); return; }
 
-            header('Location: /anime/' . urlencode($animeId));
-            exit;
+            $userId     = (int)$_SESSION['user_id'];
+            $animeId    = (int)($_POST['anime_id'] ?? 0);    // animes.id
+            $animeTitle = trim($_POST['anime_title'] ?? '');
+
+            if (!$animeId || $animeTitle === '') { header('Location:/'); return; }
+
+            $m = new FollowModel();
+            $m->addFollow($userId, $animeId, $animeTitle, 'local');
+
+            header("Location: /local/anime/{$animeId}");
+        }
+
+        public static function removeLocal(): void {
+            if (!isset($_SESSION['user_id'])) { header('Location:/login'); return; }
+
+            $userId  = (int)$_SESSION['user_id'];
+            $animeId = (int)($_POST['anime_id'] ?? 0);
+
+            $m = new FollowModel();
+            $m->removeFollow($userId, $animeId, 'local');
+
+            header("Location: /local/anime/{$animeId}");
         }
     }

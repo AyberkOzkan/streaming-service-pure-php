@@ -1,13 +1,77 @@
 <?php require_once '../app/views/layouts/header.php'; ?>
 <?php
-
+    // --- URL & poster ---
     $detailsUrl   = $detailsUrl   ?? ('/anime/' . ($animeDetails['mal_id'] ?? ''));
     $watchBaseUrl = $watchBaseUrl ?? ($detailsUrl . '/watch');
-    $poster = isset($animeDetails['images']['jpg']['large_image_url'])
-        ? $animeDetails['images']['jpg']['large_image_url']
-        : ($animeDetails['poster_url'] ?? '/img/placeholder-vertical.jpg');
 
+    // poster: Jikan -> jpg.large_image_url, yoksa local poster_url
+    $poster = $animeDetails['images']['jpg']['large_image_url']
+                ?? ($animeDetails['poster_url'] ?? '/img/placeholder-vertical.jpg');
+
+    $hasMal   = !empty($animeDetails['mal_id']);
+    $hasLocal = !empty($animeDetails['id']); // LocalAnimeController 'id' göndermeli
+    $followSource = $hasMal ? 'mal' : ($hasLocal ? 'local' : null);
+    $followId     = $hasMal ? (int)$animeDetails['mal_id'] : ($hasLocal ? (int)$animeDetails['id'] : 0);
+
+    // --- yardımcılar (view içi) ---
+    function fmt_date_display(?string $raw): string {
+        if (!$raw) return 'N/A';
+        $ts = strtotime($raw);
+        return $ts ? date('M d, Y', $ts) : htmlspecialchars($raw);
+    }
+    function fmt_duration($val): string {
+        if ($val === null || $val === '') return 'N/A';
+        // Jikan metin döndürebilir (örn. "24 min per ep"); local int (dakika) verebilir
+        if (is_numeric($val)) {
+            $m = (int)$val;
+            $h = intdiv($m, 60);
+            $r = $m % 60;
+            if ($h && $r) return "{$h} hr {$r} min";
+            if ($h) return "{$h} hr";
+            return "{$m} min";
+        }
+        return htmlspecialchars((string)$val);
+    }
+    function first_studio($studios, $fallback = null): ?string {
+        // studios: [[name=>...]] | "MAPPA" | null
+        if (is_array($studios)) {
+            if (isset($studios[0]['name'])) return $studios[0]['name'];
+            if ($studios && is_string($studios[0])) return $studios[0];
+        } elseif (is_string($studios)) {
+            $parts = array_filter(array_map('trim', explode(',', $studios)));
+            return $parts[0] ?? $fallback;
+        }
+        return $fallback;
+    }
+    function join_genres($genres): string {
+        // genres: [{name:'Action'}] | ["Action","Drama"] | "Action, Drama"
+        if (is_array($genres)) {
+            $names = array_map(function($g){
+                if (is_array($g)) return $g['name'] ?? '';
+                return (string)$g;
+            }, $genres);
+            $names = array_filter(array_map('trim', $names));
+            return $names ? htmlspecialchars(implode(', ', $names)) : 'N/A';
+        }
+        if (is_string($genres)) {
+            $names = array_filter(array_map('trim', explode(',', $genres)));
+            return $names ? htmlspecialchars(implode(', ', $names)) : 'N/A';
+        }
+        return 'N/A';
+    }
+
+    $typeText     = $animeDetails['type']   ?? 'N/A';
+    $statusText   = $animeDetails['status'] ?? 'N/A';
+    $studioText   = first_studio($animeDetails['studios'] ?? null, $animeDetails['studio'] ?? null) ?? 'N/A';
+    $genreText    = join_genres($animeDetails['genres'] ?? []);
+    $dateText     = fmt_date_display($animeDetails['aired']['string'] ?? ($animeDetails['release_date'] ?? null));
+    $durationText = fmt_duration($animeDetails['duration'] ?? ($animeDetails['duration_minutes'] ?? null));
+
+    // Jikan'da members sayı; local'de boş -> '—'
+    $membersText = isset($animeDetails['members']) ? number_format((int)$animeDetails['members']) : '—';
 ?>
+
+
 
     <!-- Breadcrumb Begin -->
     <div class="breadcrumb-option">
@@ -48,57 +112,37 @@
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6">
                                         <ul>
-                                            <li><span>Type:</span> <?= htmlspecialchars($animeDetails['type'] ?? 'N/A') ?></li>
-                                            <li><span>Studios:</span>
-                                                <?php
-                                                    $studio = $animeDetails['studios'][0]['name'] ?? ($animeDetails['studio'] ?? null);
-                                                    echo $studio ? htmlspecialchars($studio) : 'N/A';
-                                                ?>
-                                            </li>
-                                            <li><span>Date aired:</span>
-                                                <?= htmlspecialchars($animeDetails['aired']['string'] ?? ($animeDetails['release_date'] ?? 'N/A')) ?>
-                                            </li>
-                                            <li><span>Status:</span> <?= htmlspecialchars($animeDetails['status'] ?? 'N/A') ?></li>
+                                            <li><span>Type:</span> <?= htmlspecialchars($typeText) ?></li>
+                                            <li><span>Studios:</span> <?= htmlspecialchars($studioText) ?></li>
+                                            <li><span>Date aired:</span> <?= htmlspecialchars($dateText) ?></li>
+                                            <li><span>Status:</span> <?= htmlspecialchars($statusText) ?></li>
                                         </ul>
                                     </div>
                                     <div class="col-lg-6 col-md-6">
                                         <ul>
-                                            <li><span>Genre:</span>
-                                                <?php
-                                                    // Jikan: [{name: 'Action'}], Local: ['Action','Drama'] ya da hiç yoksa
-                                                    $genres = $animeDetails['genres'] ?? [];
-                                                    if ($genres) {
-                                                        $names = array_map(fn($g) => is_array($g) ? ($g['name'] ?? '') : (string)$g, $genres);
-                                                        $names = array_filter($names);
-                                                        echo $names ? htmlspecialchars(implode(', ', $names)) : 'N/A';
-                                                    } else {
-                                                        echo 'N/A';
-                                                    }
-                                                ?>
-                                            </li>
-                                            <li><span>Duration:</span> <?= htmlspecialchars($animeDetails['duration'] ?? 'N/A') ?></li>
-                                            <!-- <li><span>Quality:</span> HD</li> -->
-                                            <li><span>Views:</span>
-                                                <?= isset($animeDetails['members']) ? number_format($animeDetails['members']) : '—' ?>
-                                            </li>
-
+                                            <li><span>Genre:</span> <?= $genreText ?></li>
+                                            <li><span>Duration:</span> <?= htmlspecialchars($durationText) ?></li>
+                                            <li><span>Views:</span> <?= htmlspecialchars($membersText) ?></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                             <div class="anime__details__btn">
-                                <?php if (isset($_SESSION['user_id']) && !empty($animeDetails['mal_id'])): ?>
-                                    <form method="POST" action="/follow/<?= $isFollowing ? 'remove' : 'add' ?>" style="display:inline;">
-                                        <input type="hidden" name="anime_id" value="<?= $animeDetails['mal_id'] ?>">
-                                        <input type="hidden" name="anime_title" value="<?= htmlspecialchars($animeDetails['title']) ?>">
-                                        <button type="submit" class="follow-btn">
-                                            <i class="fa <?= $isFollowing ? 'fa-heart' : 'fa-heart-o' ?>"></i>
-                                            <?= $isFollowing ? 'Unfollow' : 'Follow' ?>
-                                        </button>
+                                <?php if (isset($_SESSION['user_id']) && $followSource && $followId): ?>
+                                    <form method="POST"
+                                        action="<?= $followSource==='mal' ? '/follow/'.($isFollowing?'remove':'add') : '/follow/local/'.($isFollowing?'remove':'add') ?>"
+                                        style="display:inline;">
+                                    <input type="hidden" name="anime_id" value="<?= $followId ?>">
+                                    <input type="hidden" name="anime_title" value="<?= htmlspecialchars($animeDetails['title']) ?>">
+                                    <button type="submit" class="follow-btn">
+                                        <i class="fa <?= $isFollowing ? 'fa-heart' : 'fa-heart-o' ?>"></i>
+                                        <?= $isFollowing ? 'Unfollow' : 'Follow' ?>
+                                    </button>
                                     </form>
-                                <?php elseif (!isset($_SESSION['user_id'])): ?>
+                                <?php else: ?>
                                     <a href="/login" class="follow-btn"><i class="fa fa-heart-o"></i> Follow</a>
                                 <?php endif; ?>
+
                                 <a href="<?= htmlspecialchars($watchBaseUrl) ?>" class="watch-btn">
                                     <span>Watch Now</span> <i class="fa fa-angle-right"></i>
                                 </a>
@@ -152,7 +196,7 @@
                             <?php foreach ($recommendations as $rec): ?>
                                 <div class="product__sidebar__view__item set-bg" data-setbg="<?= htmlspecialchars($rec['images']['jpg']['image_url']) ?>">
                                     <div class="ep"><?= $rec['episodes'] ?? '?' ?> Episodes</div>
-                                    <div class="view"><i class="fa fa-eye"></i> <?= number_format($rec['members']) ?></div>
+                                    <div class="view"><i class="fa fa-eye"></i> <?= $membersText ?></div>
                                     <h5><a href="/anime/<?= $rec['mal_id'] ?>"><?= htmlspecialchars($rec['title']) ?></a></h5>
                                 </div>
                             <?php endforeach; ?>

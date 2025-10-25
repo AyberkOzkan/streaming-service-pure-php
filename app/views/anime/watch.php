@@ -21,6 +21,9 @@
 
         <?php
           $playerUrl = $localPlayerUrl ?: ($currentPromoUrl ?? null);
+          if ($playerUrl && preg_match('~(youtube\.com/watch\?v=|youtu\.be/)~', $playerUrl)) {
+              $playerUrl = normalizeEmbedUrl($playerUrl);
+          }
           $isVideo = $playerUrl && preg_match('~\.(m3u8|mp4)(\?.*)?$~i', $playerUrl);
         ?>
 
@@ -39,6 +42,7 @@
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"
               style="width:100%; height:100%; border-radius:12px;">
             </iframe>
           <?php else: ?>

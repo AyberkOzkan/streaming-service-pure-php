@@ -50,8 +50,10 @@
 
         public function create(array $d): int {
             $st = $this->db->prepare("
-                INSERT INTO animes (mal_id, title, synopsis, poster_url, trailer_url, release_date, total_episodes)
-                VALUES (:mal_id, :title, :synopsis, :poster_url, :trailer_url, :release_date, :total_episodes)
+                INSERT INTO animes (mal_id, title, synopsis, poster_url, trailer_url, release_date, total_episodes,
+                                    type, status, studios, genres, duration___minutes)
+                VALUES (:mal_id, :title, :synopsis, :poster_url, :trailer_url, :release_date, :total_episodes,
+                        :type, :status, :studios, :genres, :duration___minutes)
                 RETURNING id
             ");
             $st->execute([
@@ -62,6 +64,11 @@
                 ':trailer_url'=> $d['trailer_url'] ?? null,
                 ':release_date'=> $d['release_date'] ?? null,
                 ':total_episodes'=> $d['total_episodes'] ?? null,
+                ':type'   => $d['type'] ?? null,
+                ':status' => $d['status'] ?? null,
+                ':studios'=> $d['studios'] ?? null,
+                ':genres' => $d['genres'] ?? null,
+                ':duration___minutes' => $d['duration___minutes'] ?? null,
             ]);
             return (int)$st->fetchColumn();
         }
@@ -76,6 +83,11 @@
                     trailer_url= :trailer_url,
                     release_date = :release_date,
                     total_episodes = :total_episodes,
+                    type = :type,
+                    status = :status,
+                    studios = :studios,
+                    genres = :genres,
+                    duration___minutes = :duration___minutes,
                     updated_at = NOW()
                 WHERE id = :id
             ");
@@ -87,6 +99,11 @@
                 ':trailer_url'=> $d['trailer_url'] ?? null,
                 ':release_date'=> $d['release_date'] ?? null,
                 ':total_episodes'=> $d['total_episodes'] ?? null,
+                ':type'   => $d['type'] ?? null,
+                ':status' => $d['status'] ?? null,
+                ':studios'=> $d['studios'] ?? null,
+                ':genres' => $d['genres'] ?? null,
+                ':duration___minutes' => $d['duration___minutes'] ?? null,
                 ':id' => $id,
             ]);
         }
@@ -166,36 +183,67 @@
         }
 
         public function listLatestMapped(int $limit = 12): array {
-            $sql = "
-                SELECT id, mal_id, title, poster_url, release_date, total_episodes, created_at, updated_at
+            $stmt = $this->db->prepare(
+                "SELECT id, title, poster_url, release_date, total_episodes, created_at
                 FROM animes
-                ORDER BY COALESCE(updated_at, created_at) DESC
-                LIMIT :limit
-            ";
-            $stmt = $this->db->prepare($sql);
+                ORDER BY created_at DESC
+                LIMIT :limit"
+            );
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-            // Jikan benzeri yapı + added_ts
             $out = [];
             foreach ($rows as $r) {
+                $pretty = null;
+                if (!empty($r['release_date'])) {
+                    $ts = strtotime($r['release_date']);
+                    if ($ts) { $pretty = date('M d, Y', $ts); } // ex: Sep 19, 2025
+                }
+
                 $out[] = [
                     'local_id' => (int)$r['id'],
-                    'mal_id'   => $r['mal_id'] !== null ? (int)$r['mal_id'] : null,
+                    'mal_id'   => null,
                     'title'    => $r['title'],
                     'images'   => ['jpg' => ['image_url' => $r['poster_url']]],
                     'episodes' => $r['total_episodes'],
                     'members'  => 0,
                     'aired'    => [
-                        'string' => $r['release_date'] ?? null,
+                        'string' => $pretty ?? ($r['release_date'] ?? null),
                         'from'   => $r['release_date'] ?? null,
                     ],
-                    'added_ts' => strtotime($r['updated_at'] ?? $r['created_at'] ?? 'now'),
+                    'added_ts' => strtotime($r['created_at'] ?? 'now'),
                     'source'   => 'local',
                 ];
             }
             return $out;
         }
+
+        public function searchLight(string $q, int $limit = 5): array {
+            $sql = "SELECT id, title, poster_url
+                    FROM animes
+                    WHERE LOWER(title) ILIKE :q
+                    ORDER BY created_at DESC
+                    LIMIT :lim";
+            $st  = $this->db->prepare($sql);
+            $st->bindValue(':q', '%'.mb_strtolower($q, 'UTF-8').'%', PDO::PARAM_STR);
+            $st->bindValue(':lim', $limit, PDO::PARAM_INT);
+            $st->execute();
+            $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
+            $out = [];
+            foreach ($rows as $r) {
+                $out[] = [
+                    'source'  => 'local',
+                    'local_id'=> (int)$r['id'],
+                    'mal_id'  => null,
+                    'title'   => $r['title'],
+                    'images'  => ['jpg' => ['image_url' => $r['poster_url'] ?: '/img/placeholder.jpg']],
+                    'href'    => '/local/anime/'.$r['id'], // front için doğrudan link
+                ];
+            }
+            return $out;
+        }
+
+
 
     }

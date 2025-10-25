@@ -9,43 +9,30 @@
             $this->db = Database::connect();
         }
 
-        public function addFollow($userId, $animeId, $animeTitle) {
-            if (empty($userId) || empty($animeId) || empty($animeTitle)) {
-                throw new Exception("User ID, anime ID, and title are required.");
+        public function addFollow(int $userId, int $animeId, string $animeTitle, string $source='mal'): bool {
+                $st = $this->db->prepare("
+                    INSERT INTO follows (user_id, anime_id, anime_title, source)
+                    VALUES (:u,:a,:t,:s)
+                    ON CONFLICT DO NOTHING
+                ");
+                return $st->execute([':u'=>$userId, ':a'=>$animeId, ':t'=>$animeTitle, ':s'=>$source]);
             }
 
-            $stmt = $this->db->prepare("INSERT INTO follows (user_id, anime_id, anime_title) VALUES (:user_id, :anime_id, :anime_title)");
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':anime_id' => $animeId,
-                ':anime_title' => $animeTitle
-            ]);
-        }
-
-        public function removeFollow($userId, $animeId) {
-            if (empty($userId) || empty($animeId)) {
-                throw new Exception("User ID and anime ID are required.");
+            public function removeFollow(int $userId, int $animeId, string $source='mal'): bool {
+                $st = $this->db->prepare("DELETE FROM follows WHERE user_id=:u AND anime_id=:a AND source=:s");
+                return $st->execute([':u'=>$userId, ':a'=>$animeId, ':s'=>$source]);
             }
 
-            $stmt = $this->db->prepare("DELETE FROM follows WHERE user_id = :user_id AND anime_id = :anime_id");
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':anime_id' => $animeId
-            ]);
-        }
 
-        public function isFollowing($userId, $animeId): bool {
-            $stmt = $this->db->prepare("SELECT 1 FROM follows WHERE user_id = :user_id AND anime_id = :anime_id LIMIT 1");
-            $stmt->execute([
-                ':user_id' => $userId,
-                ':anime_id' => $animeId
-            ]);
-            return (bool) $stmt->fetchColumn();
+        public function isFollowing(int $userId, int $id, string $source='mal'): bool {
+            $st = $this->db->prepare("SELECT 1 FROM follows WHERE user_id=:u AND anime_id=:a AND source=:s LIMIT 1");
+            $st->execute([':u'=>$userId, ':a'=>$id, ':s'=>$source]);
+            return (bool)$st->fetchColumn();
         }
 
         public function listByUser(int $userId, int $limit = 24, int $offset = 0): array {
             $stmt = $this->db->prepare(
-                "SELECT anime_id, anime_title, created_at
+                "SELECT anime_id, anime_title, source, created_at
                 FROM follows
                 WHERE user_id = :uid
                 ORDER BY created_at DESC

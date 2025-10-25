@@ -1,6 +1,7 @@
 <?php
     require_once __DIR__ . '/../../core/helpers.php';
     require_once __DIR__ . '/../../models/AnimeLocalModel.php';
+    require_once __DIR__ . '/../../core/helpers.php';
 
     class Admin_AnimeController
     {
@@ -40,15 +41,24 @@
             $title = trim($_POST['title'] ?? '');
             if ($title === '') { $_SESSION['flash_error']='Title is required.'; header('Location:/admin/anime/new'); return; }
 
+            $trailerRaw = trim($_POST['trailer_url'] ?? '');
+            $trailer    = $trailerRaw !== '' ? normalizeEmbedUrl($trailerRaw) : null;
+
+
             $m = new AnimeLocalModel();
             $id = $m->create([
-                'mal_id' => $_POST['mal_id'] !== '' ? (int)$_POST['mal_id'] : null,
-                'title'  => $title,
-                'synopsis' => trim($_POST['synopsis'] ?? ''),
-                'poster_url' => trim($_POST['poster_url'] ?? ''),
-                'trailer_url'=> trim($_POST['trailer_url'] ?? ''),
-                'release_date' => $_POST['release_date'] !== '' ? $_POST['release_date'] : null,
+                'mal_id'         => $_POST['mal_id'] !== '' ? (int)$_POST['mal_id'] : null,
+                'title'          => $title,
+                'synopsis'       => trim($_POST['synopsis'] ?? ''),
+                'poster_url'     => trim($_POST['poster_url'] ?? ''),
+                'trailer_url'     => $trailer,
+                'release_date'   => $_POST['release_date'] !== '' ? $_POST['release_date'] : null,
                 'total_episodes' => $_POST['total_episodes'] !== '' ? (int)$_POST['total_episodes'] : null,
+                'type'             => ($t = trim($_POST['type'] ?? '')) !== '' ? $t : null,
+                'status'           => ($s = trim($_POST['status'] ?? '')) !== '' ? $s : null,
+                'duration___minutes' => ($_d = trim($_POST['duration___minutes'] ?? '')) !== '' ? (int)$_d : null,
+                'studios'          => ($st = trim($_POST['studios'] ?? '')) !== '' ? $st : null,
+                'genres'           => ($g  = trim($_POST['genres']  ?? '')) !== '' ? $g  : null,
             ]);
 
             $_SESSION['flash_success'] = "Anime #$id created.";
@@ -81,15 +91,22 @@
             $title = trim($_POST['title'] ?? '');
             if ($title === '') { $_SESSION['flash_error']='Title is required.'; header("Location:/admin/anime/edit?id={$id}"); return; }
 
+            $trailerRaw = trim($_POST['trailer_url'] ?? '');
+            $trailer    = $trailerRaw !== '' ? normalizeEmbedUrl($trailerRaw) : null;
             $m = new AnimeLocalModel();
             $ok = $m->update($id, [
-                'mal_id' => $_POST['mal_id'] !== '' ? (int)$_POST['mal_id'] : null,
-                'title'  => $title,
-                'synopsis' => trim($_POST['synopsis'] ?? ''),
-                'poster_url' => trim($_POST['poster_url'] ?? ''),
-                'trailer_url'=> trim($_POST['trailer_url'] ?? ''),
-                'release_date' => $_POST['release_date'] !== '' ? $_POST['release_date'] : null,
+                'mal_id'         => $_POST['mal_id'] !== '' ? (int)$_POST['mal_id'] : null,
+                'title'          => $title,
+                'synopsis'       => trim($_POST['synopsis'] ?? ''),
+                'poster_url'     => trim($_POST['poster_url'] ?? ''),
+                'trailer_url'     => $trailer,
+                'release_date'   => $_POST['release_date'] !== '' ? $_POST['release_date'] : null,
                 'total_episodes' => $_POST['total_episodes'] !== '' ? (int)$_POST['total_episodes'] : null,
+                'type'             => ($t = trim($_POST['type'] ?? '')) !== '' ? $t : null,
+                'status'           => ($s = trim($_POST['status'] ?? '')) !== '' ? $s : null,
+                'duration___minutes' => ($_d = trim($_POST['duration___minutes'] ?? '')) !== '' ? (int)$_d : null,
+                'studios'          => ($st = trim($_POST['studios'] ?? '')) !== '' ? $st : null,
+                'genres'           => ($g  = trim($_POST['genres']  ?? '')) !== '' ? $g  : null,
             ]);
 
             $_SESSION['flash_success'] = $ok ? "Anime #$id updated." : "Failed to update anime #$id.";
@@ -137,6 +154,7 @@
             $no  = (int)($_POST['ep_no'] ?? 0);
             $title = trim($_POST['title'] ?? '');
             $url = trim($_POST['stream_url'] ?? '');
+            $url = $url !== '' ? normalizeEmbedUrl($url) : '';
             $dur = $_POST['duration_seconds'] !== '' ? (int)$_POST['duration_seconds'] : null;
 
             if ($aid<=0 || $no<=0 || $title==='') {
